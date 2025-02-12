@@ -3,10 +3,10 @@ import { Task } from '../models/task.model.js';
 export const getAllTasks = async (req, res) => {
     try {
         const tasks = await Task.find()
-        // .populate('Id_Client')
-        // .populate('Id_Projet')
-        // .populate('Id_Collaborateur');
-        res.json(tasks);
+        .populate('id_projet')
+        .populate('statut_tache')
+        .populate('type_tache');
+        res.json({data:tasks});
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -22,7 +22,7 @@ export const getTaskById = async (req, res) => {
         if (!task) {
             return res.status(404).json({ message: 'Task not found' });
         }
-        res.json(task);
+        res.json({data:task});
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
