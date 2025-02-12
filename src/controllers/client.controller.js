@@ -113,17 +113,17 @@ export const addClientContact = async (req, res) => {
   try {
     const contact = new ContactClient(req.body);
     const newContact = await contact.save();
-    res.status(201).json(newContact);
+    res.status(201).json({data:newContact});
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    res.status(400).json({ message: error.message,status:400 });
   }
 };
 
 // Get all contacts for a specific client
 export const getClientContacts = async (req, res) => {
   try {
-    const contacts = await ContactClient.find();
-    res.json(contacts);
+    const contacts = await ContactClient.find().populate('fonction_contact');
+    res.json({data:contacts});
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -136,7 +136,7 @@ export const getContactById = async (req, res) => {
     if (!contact) {
       return res.status(404).json({ message: 'Contact not found' });
     }
-    res.json(contact);
+    res.json({data:contact});
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -233,7 +233,7 @@ export const createFonctionContact = async (req, res) => {
 export const getAllFonctionContacts = async (req, res) => {
   try {
     const fonctionContacts = await FonctionContact.find();
-    res.json(fonctionContacts);
+    res.json({data:fonctionContacts});
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
