@@ -48,8 +48,6 @@ export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-
-
     const user = await User.findOne({ email }).populate('role', 'name description');
 
     console.log("user", user);
@@ -76,8 +74,16 @@ export const login = async (req, res) => {
       { expiresIn: '24h' }
     );
 
-    res.json({
-      token,
+    // Set the token in the cookies (httpOnly, secure, sameSite)
+    res.cookie('token', token, {
+      httpOnly: true, // So it can't be accessed via JavaScript
+      secure: process.env.NODE_ENV === 'production', // Set to true in production (uses https)
+      sameSite: 'lax', // or 'strict' if you need strict cookie policy
+      maxAge: 24 * 60 * 60 * 1000 // 1 day
+    });
+
+    // Send user data along with the token (but without sending the token directly in the response body)
+    return res.json({
       user: {
         id: user._id,
         username: user.username,
