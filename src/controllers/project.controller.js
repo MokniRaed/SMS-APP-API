@@ -57,6 +57,8 @@ export const uploadZones = async (req, res) => {
     }
 
     // Read the uploaded Excel file
+    console.log("reading file");
+
     const workbook = xlsx.readFile(req.file.path);
     const sheetName = workbook.SheetNames[0]; // Get the first sheet
     const sheet = workbook.Sheets[sheetName];
@@ -68,6 +70,8 @@ export const uploadZones = async (req, res) => {
       sous_Zone_cible: row['CL_Sous_Zone'],
 
     }));
+    console.log("insering data");
+
 
     // Save ZoneCible to the database
     await ZoneCible.insertMany(zones);
