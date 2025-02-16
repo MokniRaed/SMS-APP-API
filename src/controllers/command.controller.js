@@ -1,21 +1,76 @@
-import { Command, LineCommand } from '../models/command.model.js';
+import { Command, LineCommand, StatutArtCmd, StatutCmd } from '../models/command.model.js';
 
 export const getAllCommands = async (req, res) => {
   try {
-    const commands = await Command.find().populate('Id_Client Id_Collaborateur');
-    res.json(commands);
+    const commands = await Command.find().populate('id_client id_collaborateur statut_cmd');
+    res.json({ data: commands });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
 export const createCommand = async (req, res) => {
-  const command = new Command(req.body);
+  const { date_cmd, id_client, id_collaborateur, statut_cmd, date_livraison, notes_cmd, articles } = req.body;
+
   try {
-    const newCommand = await command.save();
-    res.status(201).json(newCommand);
+    // Create a new Command
+    const newCommand = new Command({
+      date_cmd,
+      id_client,
+      id_collaborateur,
+      statut_cmd,
+      date_livraison,
+      notes_cmd,
+    });
+
+    const savedCommand = await newCommand.save();
+
+    // Create LineCommands (Articles)
+    const lineCommands = articles?.map(article => {
+      return new LineCommand({
+        id_commande: savedCommand._id,
+        id_article: article.id_article,
+        quantite_cmd: article.quantite_cmd,
+        quantite_valid: article.quantite_valid || 0,
+        quantite_confr: article.quantite_confr || 0,
+        statut_art_cmd: article.statut_art_cmd,
+        notes_cmd: article.notes_cmd || '',
+      });
+    });
+
+    await LineCommand.insertMany(lineCommands);
+
+    // Associate the LineCommands with the Command
+    savedCommand.lignes = lineCommands.map(line => line._id);
+    await savedCommand.save();
+
+    res.status(201).json(savedCommand);
   } catch (error) {
+    console.log("error", error);
+
     res.status(400).json({ message: error.message });
+  }
+};
+
+export const getLineCommandsbyOrder = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const lineCommands = await LineCommand.find({ id_commande: id })
+      .populate('id_commande statut_art_cmd id_article');
+    res.json({ data: lineCommands });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
+export const getAllLineCommands = async (req, res) => {
+  try {
+    const lineCommands = await LineCommand.find()
+      .populate('id_commande statut_art_cmd');
+    res.json(lineCommands);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -25,17 +80,170 @@ export const addCommandLine = async (req, res) => {
     if (!command) {
       return res.status(404).json({ message: 'Command not found' });
     }
-    
+
     const line = new LineCommand({
       ...req.body,
-      Id_commande: command._id
+      id_commande: command._id,
     });
-    
-    command.lignes.push(line);
+
+    await line.save();
+
+    // Add the LineCommand to the Command's `lignes` field
+    command.lignes.push(line._id);
     await command.save();
-    
-    res.status(201).json(command);
+
+    res.status(201).json(line);
   } catch (error) {
     res.status(400).json({ message: error.message });
+  }
+};
+
+
+export const getCommandById = async (req, res) => {
+  try {
+    const command = await Command.findById(req.params.id)
+      .populate('id_client id_collaborateur statut_cmd');
+    if (!command) {
+      return res.status(404).json({ message: 'Command not found' });
+    }
+    res.json({ data: command });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
+
+
+
+
+
+// Get all statutCmd descriptions
+export const getAllStatutCmds = async (req, res) => {
+  try {
+    const statutCmds = await StatutCmd.find();
+    console.log("statutCmds", statutCmds);
+
+    res.json(statutCmds);
+  } catch (error) {
+    console.log("err", error);
+
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Create a new statutCmd description
+export const createStatutCmd = async (req, res) => {
+  const { value, description } = req.body;
+
+  try {
+    const statutCmd = new StatutCmd({ value, description });
+    const newStatutCmd = await statutCmd.save();
+    res.status(201).json(newStatutCmd);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+// Get a single statutCmd by ID
+export const getStatutCmdById = async (req, res) => {
+  try {
+    const statutCmd = await StatutCmd.findById(req.params.id);
+    if (!statutCmd) {
+      return res.status(404).json({ message: 'StatutCmd not found' });
+    }
+    res.json(statutCmd);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Update statutCmd by ID
+export const updateStatutCmd = async (req, res) => {
+  try {
+    const updatedStatutCmd = await StatutCmd.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (!updatedStatutCmd) {
+      return res.status(404).json({ message: 'StatutCmd not found' });
+    }
+    res.json(updatedStatutCmd);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+// Delete a statutCmd by ID
+export const deleteStatutCmd = async (req, res) => {
+  try {
+    const deletedStatutCmd = await StatutCmd.findByIdAndDelete(req.params.id);
+    if (!deletedStatutCmd) {
+      return res.status(404).json({ message: 'StatutCmd not found' });
+    }
+    res.json({ message: 'StatutCmd deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// ** StatutArtCmd Controllers **
+
+// Get all statutArtCmd descriptions
+export const getAllStatutArtCmds = async (req, res) => {
+  try {
+    const statutArtCmds = await StatutArtCmd.find();
+    res.json(statutArtCmds);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Create a new statutArtCmd description
+export const createStatutArtCmd = async (req, res) => {
+  const { value, description } = req.body;
+
+  try {
+    const statutArtCmd = new StatutArtCmd({ value, description });
+    const newStatutArtCmd = await statutArtCmd.save();
+    res.status(201).json(newStatutArtCmd);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+// Get a single statutArtCmd by ID
+export const getStatutArtCmdById = async (req, res) => {
+  try {
+    const statutArtCmd = await StatutArtCmd.findById(req.params.id);
+    if (!statutArtCmd) {
+      return res.status(404).json({ message: 'StatutArtCmd not found' });
+    }
+    res.json(statutArtCmd);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Update statutArtCmd by ID
+export const updateStatutArtCmd = async (req, res) => {
+  try {
+    const updatedStatutArtCmd = await StatutArtCmd.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (!updatedStatutArtCmd) {
+      return res.status(404).json({ message: 'StatutArtCmd not found' });
+    }
+    res.json(updatedStatutArtCmd);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+// Delete a statutArtCmd by ID
+export const deleteStatutArtCmd = async (req, res) => {
+  try {
+    const deletedStatutArtCmd = await StatutArtCmd.findByIdAndDelete(req.params.id);
+    if (!deletedStatutArtCmd) {
+      return res.status(404).json({ message: 'StatutArtCmd not found' });
+    }
+    res.json({ message: 'StatutArtCmd deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };

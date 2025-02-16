@@ -4,9 +4,10 @@ import express from 'express';
 import helmet from 'helmet';
 import mongoose from 'mongoose';
 
+import articleRoutes from './routes/article.routes.js';
 import authRoutes from './routes/auth.routes.js';
 import clientRoutes from './routes/client.routes.js';
-import commandRoutes from './routes/command.routes.js';
+import orderRoutes from './routes/order.routes.js';
 import projectRoutes from './routes/project.routes.js';
 import requestRoutes from './routes/request.routes.js';
 import taskRoutes from './routes/task.routes.js';
@@ -50,7 +51,9 @@ mongoose.connect(process.env.MONGODB_URI)
 app.use('/api/auth', authRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/projects', projectRoutes);
-app.use('/api/commands', commandRoutes);
+app.use('/api/articles', articleRoutes);
+app.use('/api/orders', orderRoutes);
+
 app.use('/api/requests', authenticateToken, requestRoutes);
 app.use('/api/clients', clientRoutes);
 app.use('/api/users', userRoutes);

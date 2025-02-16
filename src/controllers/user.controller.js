@@ -133,11 +133,25 @@ export const createUser = async (req, res) => {
 export const getAllUsers = async (req, res) => {
     try {
         const users = await User.find().populate('role', 'name description').select("-password");
-        res.json(users);
+        res.json({ data: users });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
+// Get all users by role
+export const getAllUsersByrole = async (req, res) => {
+    try {
+        const { role } = req.params; // Extract role from request params
+        const users = await User.find({ role }) // Filter users by role
+            .populate('role', 'name description')
+            .select("-password");
+
+        res.json({ data: users });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 
 // Get a specific user by ID
 export const getUserById = async (req, res) => {

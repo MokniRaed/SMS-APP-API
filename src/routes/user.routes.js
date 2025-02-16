@@ -6,6 +6,7 @@ import {
     deleteUser,
     getAllRoles,
     getAllUsers,
+    getAllUsersByrole,
     getRoleById,
     getUserById,
     updateRole,
@@ -26,6 +27,7 @@ router.delete('/roles/:id', deleteRole); // Delete a role by ID
 
 router.post('/', createUser); // Create a user
 router.get('/', getAllUsers); // Get all users
+router.get('/role/:role', getAllUsersByrole); // Get all users
 router.get('/:id', getUserById); // Get a specific user by ID
 router.patch('/:id', updateUser); // Update a user by ID
 router.delete('/:id', deleteUser); // Delete a user by ID
