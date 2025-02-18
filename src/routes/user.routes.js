@@ -9,6 +9,8 @@ import {
     getAllUsersByrole,
     getRoleById,
     getUserById,
+    getUserProfile,
+    updatePassword,
     updateRole,
     updateUser
 } from '../controllers/user.controller.js';
@@ -22,6 +24,13 @@ router.get('/roles', getAllRoles); // Get ausersll roles
 router.get('/roles/:id', getRoleById); // Get a specific role by ID
 router.patch('/roles/:id', updateRole); // Update a role by ID
 router.delete('/roles/:id', deleteRole); // Delete a role by ID
+
+// ================== User Profile Routes ================== //
+
+router.get('/profile/:id', getUserProfile); // Get a specific role by ID
+router.post('/profile/password/:id', updatePassword); // Get a specific role by ID
+
+
 
 // ================== User Routes ================== //
 

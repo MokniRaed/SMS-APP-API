@@ -190,7 +190,7 @@ export const deleteStatutCmd = async (req, res) => {
 export const getAllStatutArtCmds = async (req, res) => {
   try {
     const statutArtCmds = await StatutArtCmd.find();
-    res.json(statutArtCmds);
+    res.json({ data: statutArtCmds });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

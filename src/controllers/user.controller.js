@@ -46,7 +46,7 @@ export const createRole = async (req, res) => {
 export const getAllRoles = async (req, res) => {
     try {
         const roles = await Role.find();
-        res.json(roles);
+        res.json({ data: roles });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -160,9 +160,66 @@ export const getUserById = async (req, res) => {
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
-        res.json(user);
+        res.json({ data: user });
     } catch (error) {
         res.status(500).json({ message: error.message });
+    }
+};
+
+// Get a specific user by ID
+export const getUserProfile = async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id).select("email username");
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        res.json({ data: user });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+export const updatePassword = async (req, res) => {
+    try {
+        const { id } = req.params; // Assuming user ID is passed as a parameter
+        const { currentPassword, newPassword, confirmNewPassword } = req.body;
+
+        // Check if all necessary fields are provided
+        if (!currentPassword || !newPassword || !confirmNewPassword) {
+            return res.status(400).json({ message: 'Please provide all required fields' });
+        }
+
+        // Check if the new password matches the confirmation password
+        if (newPassword !== confirmNewPassword) {
+            return res.status(400).json({ message: 'New passwords do not match' });
+        }
+
+        // Find the user by ID
+        const user = await User.findById(id);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Verify the current password
+        const isPasswordValid = await user.comparePassword(currentPassword);
+        if (!isPasswordValid) {
+            return res.status(400).json({ message: 'Incorrect current password' });
+        }
+
+        // Validate the new password (optional: add your own validation)
+        if (newPassword.length < 6) {
+            return res.status(400).json({ message: 'Password must be at least 6 characters long' });
+        }
+
+        // Update the password and save the user
+        user.password = newPassword;
+        await user.save();
+
+        // Respond with a success message
+        res.status(200).json({ message: 'Password updated successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
     }
 };
 
