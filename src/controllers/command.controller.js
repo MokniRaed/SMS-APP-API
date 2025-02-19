@@ -1,3 +1,4 @@
+import { Article } from '../models/article.model.js';
 import { Command, LineCommand, StatutArtCmd, StatutCmd } from '../models/command.model.js';
 
 export const getAllCommands = async (req, res) => {
@@ -52,6 +53,114 @@ export const createCommand = async (req, res) => {
   }
 };
 
+
+export const validateOrder = async (req, res) => {
+  const { id } = req.params;
+  const { date_cmd, id_client, id_collaborateur, statut_cmd, date_livraison, notes_cmd, articles } = req.body;
+
+
+  try {
+    // 1. Update the main Command document
+    const updatedCommand = await Command.findByIdAndUpdate(
+      id,
+      {
+        date_cmd,
+        id_client,
+        id_collaborateur,
+        statut_cmd,
+        date_livraison,
+        notes_cmd
+      },
+    );
+
+    if (!updatedCommand) {
+      throw new Error('Order not found');
+    }
+
+    // 2. Process Line Commands
+    const existingLines = await LineCommand.find({ id_commande: id });
+    const existingLineIds = existingLines.map(line => line._id.toString());
+
+    // Prepare bulk operations
+    const bulkOps = [];
+
+    // Process incoming articles
+    for (const article of articles) {
+      // Validate article existence (optional)
+      const validArticle = await Article.exists({ _id: article.id_article });
+      if (!validArticle) throw new Error(`Invalid article ID: ${article.id_article}`);
+
+      if (article._id) {
+        // Update existing line
+        bulkOps.push({
+          updateOne: {
+            filter: { _id: article._id },
+            update: {
+              $set: {
+                quantite_cmd: article.quantite_cmd,
+                quantite_valid: article.quantite_valid,
+                quantite_confr: article.quantite_confr,
+                statut_art_cmd: article.statut_art_cmd,
+                notes_cmd: article.notes_cmd
+              }
+            }
+          }
+        });
+        // Keep track of existing IDs
+        existingLineIds.splice(existingLineIds.indexOf(article._id), 1);
+      } else {
+        // Create new line
+        bulkOps.push({
+          insertOne: {
+            document: {
+              ...article,
+              id_commande: id
+            }
+          }
+        });
+      }
+    }
+
+    // Delete remaining lines not in incoming articles
+    if (existingLineIds.length > 0) {
+      bulkOps.push({
+        deleteMany: {
+          filter: { _id: { $in: existingLineIds } }
+        }
+      });
+    }
+
+    // Execute all line command operations
+    const bulkResult = await LineCommand.bulkWrite(bulkOps);
+
+
+
+    // 3. Update Command's lignes array
+    const newIds = Object.values(bulkResult.insertedIds || {});
+    updatedCommand.lignes = [
+      ...articles.filter(a => a._id).map(a => a._id), // Existing IDs
+      ...newIds // Newly created IDs
+    ];
+
+    await updatedCommand.save();
+
+    // //  Populate the response
+    // const finalCommand = await Command.findById(id)
+    //   .populate('lignes')
+    //   .populate('id_client')
+    //   .populate('id_collaborateur');
+
+    res.status(200).json({ data: updatedCommand });
+  } catch (error) {
+    await session.abortTransaction();
+    res.status(400).json({
+      message: error.message,
+      details: error instanceof mongoose.Error.ValidationError
+        ? error.errors
+        : null
+    });
+  }
+};
 export const getLineCommandsbyOrder = async (req, res) => {
   try {
     const { id } = req.params;
@@ -102,7 +211,7 @@ export const addCommandLine = async (req, res) => {
 export const getCommandById = async (req, res) => {
   try {
     const command = await Command.findById(req.params.id)
-      .populate('id_client id_collaborateur statut_cmd');
+
     if (!command) {
       return res.status(404).json({ message: 'Command not found' });
     }
@@ -122,7 +231,6 @@ export const getCommandById = async (req, res) => {
 export const getAllStatutCmds = async (req, res) => {
   try {
     const statutCmds = await StatutCmd.find();
-    console.log("statutCmds", statutCmds);
 
     res.json(statutCmds);
   } catch (error) {
