@@ -232,7 +232,7 @@ export const getAllStatutCmds = async (req, res) => {
   try {
     const statutCmds = await StatutCmd.find();
 
-    res.json(statutCmds);
+    res.json({ data: statutCmds });
   } catch (error) {
     console.log("err", error);
 

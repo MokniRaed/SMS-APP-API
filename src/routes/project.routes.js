@@ -21,9 +21,9 @@ router.delete('/status/:id', deleteProjectStatus);
 
 router.get('/produit-cible', getAllProduitsCible);
 router.get('/produit-cible/:id', getProduitCibleById);
-router.post('/produit-cible', createProduitCible);
-router.patch('/produit-cible/:id', updateProduitCible);
-router.delete('/produit-cible/:id', deleteProduitCible);
+router.post('/productcible', createProduitCible);
+router.patch('/productcible/:id', updateProduitCible);
+router.delete('/productcible/:id', deleteProduitCible);
 
 
 router.get('/zones', getAllZones);

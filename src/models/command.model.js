@@ -4,7 +4,7 @@ import mongoose from 'mongoose';
 const statutCmdSchema = new mongoose.Schema({
   value: {
     type: String,
-    required: true,  // status value like 'pending', 'completed', etc.
+    // required: true,  // status value like 'pending', 'completed', etc.
   },
   description: {
     type: String,
@@ -16,7 +16,7 @@ const statutCmdSchema = new mongoose.Schema({
 const statutArtCmdSchema = new mongoose.Schema({
   value: {
     type: String,
-    required: true,  // status value like 'shipped', 'pending', etc.
+    // required: true,  // status value like 'shipped', 'pending', etc.
   },
   description: {
     type: String,

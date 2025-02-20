@@ -113,9 +113,9 @@ export const addClientContact = async (req, res) => {
   try {
     const contact = new ContactClient(req.body);
     const newContact = await contact.save();
-    res.status(201).json({data:newContact});
+    res.status(201).json({ data: newContact });
   } catch (error) {
-    res.status(400).json({ message: error.message,status:400 });
+    res.status(400).json({ message: error.message, status: 400 });
   }
 };
 
@@ -123,7 +123,7 @@ export const addClientContact = async (req, res) => {
 export const getClientContacts = async (req, res) => {
   try {
     const contacts = await ContactClient.find().populate('fonction_contact');
-    res.json({data:contacts});
+    res.json({ data: contacts });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -136,7 +136,7 @@ export const getContactById = async (req, res) => {
     if (!contact) {
       return res.status(404).json({ message: 'Contact not found' });
     }
-    res.json({data:contact});
+    res.json({ data: contact });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -223,7 +223,7 @@ export const createFonctionContact = async (req, res) => {
   try {
     const fonctionContact = new FonctionContact(req.body);
     const newFonctionContact = await fonctionContact.save();
-    res.status(201).json(newFonctionContact);
+    res.status(201).json({ data: newFonctionContact });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -233,7 +233,7 @@ export const createFonctionContact = async (req, res) => {
 export const getAllFonctionContacts = async (req, res) => {
   try {
     const fonctionContacts = await FonctionContact.find();
-    res.json({data:fonctionContacts});
+    res.json({ data: fonctionContacts });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -265,7 +265,7 @@ export const updateFonctionContact = async (req, res) => {
       return res.status(404).json({ message: 'Function contact not found' });
     }
 
-    res.json(updatedFonctionContact);
+    res.json({ data: updatedFonctionContact });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }

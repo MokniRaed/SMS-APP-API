@@ -38,11 +38,11 @@ router.post('/upload-contacts', upload.single('file'), uploadContacts);
 
 // ================== FonctionContact Routes ================== //
 
-router.post('/fonction-contacts', createFonctionContact); // Create a function contact
+router.post('/function', createFonctionContact); // Create a function contact
 router.get('/fonction-contacts', getAllFonctionContacts); // Get all function contacts
 router.get('/fonction-contacts/:id', getFonctionContactById); // Get a specific function contact by ID
-router.patch('/fonction-contacts/:id', updateFonctionContact); // Update a function contact by ID
-router.delete('/fonction-contacts/:id', deleteFonctionContact); // Delete a function contact by ID
+router.patch('/function/:id', updateFonctionContact); // Update a function contact by ID
+router.delete('/function/:id', deleteFonctionContact); // Delete a function contact by ID
 
 // ================== TypeInfoLibre Routes ================== //
 

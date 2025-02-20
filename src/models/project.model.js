@@ -9,7 +9,6 @@ const typeProjetSchema = new mongoose.Schema({
   },
   description_type_prj: {
     type: String,
-    required: true
   }
 });
 
@@ -22,7 +21,7 @@ const produitCibleSchema = new mongoose.Schema({
   },
   description_produit_cible: {
     type: String,
-    required: true
+    // required: true
   }
 });
 
@@ -51,7 +50,6 @@ const statutProjetSchema = new mongoose.Schema({
   },
   description_statut_prj: {
     type: String,
-    required: true
   }
 });
 
