@@ -7,7 +7,7 @@ const typeTacheSchema = new mongoose.Schema({
   },
   description_type_tch: {
     type: String,
-    required: true,
+    // required: true,
   },
 }, {
   timestamps: true,
@@ -21,7 +21,7 @@ const statutTacheSchema = new mongoose.Schema({
   },
   description_statut_tch: {
     type: String,
-    required: true,
+    // required: true,
   },
 }, {
   timestamps: true,
