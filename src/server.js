@@ -67,4 +67,10 @@ app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
 
-export default app;
+// export default app;
+
+
+// For vercel Use
+export default (req, res) => {
+  app(req, res);  // This is what Vercel needs, it calls the Express app
+};
