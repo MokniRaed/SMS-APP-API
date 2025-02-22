@@ -9,6 +9,6 @@ app.get('/', (req, res) => {
 });
 
 // Export the handler for Netlify
-export default async (req, res) => {
-    app(req, res);
+export default (req, res) => {
+    app(req, res); // Pass the request and response to the express app
 };

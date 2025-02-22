@@ -1,0 +1,6 @@
+[build]
+  functions = "netlify/functions"  # Specify where your serverless functions are located
+  publish = "public"  # If you have static assets, or just remove this if you're only using functions
+
+[build.environment]
+  NODE_ENV = "production"
