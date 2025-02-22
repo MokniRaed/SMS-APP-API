@@ -1,3 +1,5 @@
+import express from 'express'; // Make sure this line is at the top
+
 // import express from 'express';
 // import cors from 'cors';
 // import dotenv from 'dotenv';
