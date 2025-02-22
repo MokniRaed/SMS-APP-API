@@ -1,3 +1,3 @@
-// run `node index.js` in the terminal
+import app from "./src/server";
 
-console.log(`Hello Node.js v${process.versions.node}!`);
+app()

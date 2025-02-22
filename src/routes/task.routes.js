@@ -6,13 +6,6 @@ import {
     getTaskById, getTaskStatus, getTypeTask,
     updateTask, updateTaskStatus, updateTypeTask
 } from '../controllers/task.controller.js';
-import {
-    createProjectStatus,
-    createTypeProject, deleteProjectStatus, deleteTypeProject, getAllProjectsStatus,
-    getAllTypeProjects, getProjectStatus,
-    getTypeProjectById, updateProjectStatus,
-    updateTypeProject
-} from "../controllers/project.controller.js";
 
 const router = express.Router();
 
@@ -31,6 +24,8 @@ router.patch('/taskStatus/:id', updateTaskStatus);
 router.delete('/taskStatus/:id', deleteTaskStatus);
 
 
+
+router.patch('update-status/:id', updateTask);
 
 router.get('/', getAllTasks);
 router.get('/:id', getTaskById);
