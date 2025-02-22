@@ -6,18 +6,18 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import helmet from 'helmet';
 import mongoose from 'mongoose';
-import { authenticateToken } from '../src/middlewares/auth.js';
-import errorHandler from '../src/middlewares/errorHandler.js';
+import { authenticateToken } from './src/middlewares/auth.js';
+import errorHandler from './src/middlewares/errorHandler.js';
 
-import articleRoutes from '../src/routes/article.routes.js';
-import authRoutes from '../src/routes/auth.routes.js';
-import clientRoutes from '../src/routes/client.routes.js';
-import orderRoutes from '../src/routes/order.routes.js';
-import projectRoutes from '../src/routes/project.routes.js';
-import requestRoutes from '../src/routes/request.routes.js';
-import taskRoutes from '../src/routes/task.routes.js';
-import uploadRoutes from '../src/routes/upload.routes.js';
-import userRoutes from '../src/routes/user.routes.js';
+import articleRoutes from './src/routes/article.routes.js';
+import authRoutes from './src/routes/auth.routes.js';
+import clientRoutes from './src/routes/client.routes.js';
+import orderRoutes from './src/routes/order.routes.js';
+import projectRoutes from './src/routes/project.routes.js';
+import requestRoutes from './src/routes/request.routes.js';
+import taskRoutes from './src/routes/task.routes.js';
+import uploadRoutes from './src/routes/upload.routes.js';
+import userRoutes from './src/routes/user.routes.js';
 
 dotenv.config();
 
