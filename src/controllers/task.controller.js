@@ -1,5 +1,4 @@
-import {StatutTache, Task, TypeTache} from '../models/task.model.js';
-import {StatutProjet, TypeProjet} from "../models/project.model.js";
+import { StatutTache, Task, TypeTache } from '../models/task.model.js';
 
 
 // ******** Controller Code for Tasks  ********* //
@@ -7,10 +6,12 @@ import {StatutProjet, TypeProjet} from "../models/project.model.js";
 export const getAllTasks = async (req, res) => {
     try {
         const tasks = await Task.find()
-        .populate('id_projet')
-        .populate('statut_tache')
-        .populate('type_tache');
-        res.json({data:tasks});
+            .populate('id_projet')
+            .populate('statut_tache')
+            .populate('type_tache')
+            .populate('id_collaborateur')
+            .populate('id_client');
+        res.json({ data: tasks });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -20,13 +21,15 @@ export const getTaskById = async (req, res) => {
 
     try {
         const task = await Task.findById(req.params.id)
-        // .populate('Id_Client')
-        // .populate('Id_Projet')
-        // .populate('Id_Collaborateur');
+            .populate('id_projet')
+            .populate('statut_tache')
+            .populate('type_tache')
+            .populate('id_collaborateur')
+            .populate('id_client');
         if (!task) {
             return res.status(404).json({ message: 'Task not found' });
         }
-        res.json({data:task});
+        res.json({ data: task });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -83,7 +86,7 @@ export const deleteTask = async (req, res) => {
 export const getAllTypeTasks = async (req, res) => {
     try {
         const typeTasks = await TypeTache.find()
-        ;
+            ;
         res.json({ data: typeTasks });
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -92,7 +95,7 @@ export const getAllTypeTasks = async (req, res) => {
 
 
 
-export const getTypeTask= async (req, res) => {
+export const getTypeTask = async (req, res) => {
     try {
         const typeTask = await TypeTache.findById(
             req.params.id
@@ -157,7 +160,7 @@ export const deleteTypeTask = async (req, res) => {
 export const getAllTaskStatus = async (req, res) => {
     try {
         const statusTask = await StatutTache.find()
-        ;
+            ;
         res.json({ data: statusTask });
     } catch (error) {
         res.status(500).json({ message: error.message });

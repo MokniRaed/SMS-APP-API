@@ -35,7 +35,8 @@ const taskSchema = new mongoose.Schema({
     ref: 'TypeTache',
   },
   id_client: {
-    type: String,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'ContactClient',
     required: true,
   },
   id_projet: {
@@ -44,7 +45,8 @@ const taskSchema = new mongoose.Schema({
     required: true,
   },
   id_collaborateur: {
-    type: String,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
     required: true,
   },
   date_tache: {
