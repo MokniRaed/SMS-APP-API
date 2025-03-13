@@ -3,8 +3,18 @@ import { Command, LineCommand, StatutArtCmd, StatutCmd } from '../models/command
 
 export const getAllCommands = async (req, res) => {
   try {
-    const commands = await Command.find().populate('id_client id_collaborateur statut_cmd');
-    res.json({ data: commands });
+    let query = Command.find();
+
+    if (req.query.id_client) {
+      query = query.where('id_client').equals(req.query.id_client);
+    }
+
+    if (req.query.id_collaborateur) {
+      query = query.where('id_collaborateur').equals(req.query.id_collaborateur);
+    }
+
+    const commands = await query.populate('id_client id_collaborateur statut_cmd');
+    res.status(200).json({ data: commands });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -52,6 +62,7 @@ export const createCommand = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 };
+
 
 
 export const validateOrder = async (req, res) => {
@@ -209,6 +220,7 @@ export const addCommandLine = async (req, res) => {
 
 
 export const getCommandById = async (req, res) => {
+
   try {
     const command = await Command.findById(req.params.id)
 
@@ -221,6 +233,20 @@ export const getCommandById = async (req, res) => {
   }
 };
 
+
+export const deleteCommand = async (req, res) => {
+
+  try {
+    const command = await Command.findByIdAndDelete(req.params.id);
+    if (!command) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+    await LineCommand.deleteMany({ id_commande: req.params.id })
+    res.json({ message: 'Order deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
 
 

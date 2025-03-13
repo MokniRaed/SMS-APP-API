@@ -4,7 +4,7 @@ import { Article } from "../models/article.model.js";
 // Get all articles
 export const getArticles = async (req, res) => {
   try {
-    const articles = await Article.find();
+    const articles = await Article.find({ active: true });
     res.status(200).json({ data: articles });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -14,7 +14,7 @@ export const getArticles = async (req, res) => {
 // Get a single article by ID
 export const getArticleById = async (req, res) => {
   try {
-    const article = await Article.findById(req.params.id);
+    const article = await Article.findById({ _id: req.params.id, active: true });
     if (!article) {
       return res.status(404).json({ message: 'Article not found' });
     }

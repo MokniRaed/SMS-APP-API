@@ -3,9 +3,32 @@ import { ProduitCible, Project, StatutProjet, TypeProjet, ZoneCible } from '../m
 
 export const getAllProjects = async (req, res) => {
   try {
-    const projects = await Project.find().populate('type_projet produit_cible statut_projet zone_cible')// Populate the ClientId field with corresponding Client document
-      ;
-    res.json({ data: projects });
+    const { page = 1, limit = 10, searchTerm = '' } = req.query;
+    const skip = (page - 1) * limit;
+
+    const searchQuery = searchTerm
+      ? {
+        $or: [
+          { name: { $regex: searchTerm, $options: 'i' } },
+          { description: { $regex: searchTerm, $options: 'i' } },
+        ],
+      }
+      : {};
+
+    const projects = await Project.find(searchQuery)
+      .populate('type_projet produit_cible statut_projet zone_cible')
+      .skip(skip)
+      .limit(parseInt(limit));
+
+    const total = await Project.countDocuments(searchQuery);
+
+    res.json({
+      data: projects,
+      total,
+      page: parseInt(page),
+      limit: parseInt(limit),
+      searchTerm,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

@@ -1,11 +1,9 @@
 import express from 'express';
-import { addCommandLine, createCommand, createStatutArtCmd, createStatutCmd, deleteStatutArtCmd, deleteStatutCmd, getAllCommands, getAllStatutArtCmds, getAllStatutCmds, getCommandById, getLineCommandsbyOrder, getStatutArtCmdById, getStatutCmdById, updateStatutArtCmd, updateStatutCmd, validateOrder } from '../controllers/command.controller.js';
+import { addCommandLine, createCommand, createStatutArtCmd, createStatutCmd, deleteCommand, deleteStatutArtCmd, deleteStatutCmd, getAllCommands, getAllStatutArtCmds, getAllStatutCmds, getCommandById, getLineCommandsbyOrder, getStatutArtCmdById, getStatutCmdById, updateStatutArtCmd, updateStatutCmd, validateOrder } from '../controllers/command.controller.js';
 
 const router = express.Router();
 
-// Order routes
-router.get('/', getAllCommands);
-router.post('/', createCommand);
+
 
 // ** StatutCmd Routes ** 
 router.get('/statutcmds', getAllStatutCmds);
@@ -26,7 +24,11 @@ router.delete('/statutartcmds/:id', deleteStatutArtCmd);
 router.get('/cmd/:id', getLineCommandsbyOrder);
 
 // Order routes
+router.get('/', getAllCommands);
+router.post('/', createCommand);
 router.get('/:id', getCommandById);
+router.delete('/:id', deleteCommand);
+
 router.post('/:id/lines', addCommandLine);
 router.patch('/validate/:id', validateOrder);
 

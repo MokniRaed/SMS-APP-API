@@ -14,6 +14,13 @@ const articleSchema = new mongoose.Schema({
   art_suivi_stock: {
     type: String,
   },
+  active: {
+    type: Boolean,
+    default: true
+  },
+  archived: {
+    type: Boolean,
+  },
   art_code_famille: String,
   art_famille: String,
   art_cat_niv_1: String,

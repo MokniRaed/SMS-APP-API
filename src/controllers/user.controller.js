@@ -132,8 +132,33 @@ export const createUser = async (req, res) => {
 // Get all users
 export const getAllUsers = async (req, res) => {
     try {
-        const users = await User.find().populate('role', 'name description').select("-password");
-        res.json({ data: users });
+        const { page = 1, limit = 10, searchTerm = '' } = req.query;
+        const skip = (page - 1) * limit;
+
+        const searchQuery = searchTerm
+            ? {
+                $or: [
+                    { username: { $regex: searchTerm, $options: 'i' } },
+                    { email: { $regex: searchTerm, $options: 'i' } },
+                ],
+            }
+            : {};
+
+        const users = await User.find(searchQuery)
+            .populate('role', 'name description')
+            .select("-password")
+            .skip(skip)
+            .limit(parseInt(limit));
+
+        const total = await User.countDocuments(searchQuery);
+
+        res.json({
+            data: users,
+            total,
+            page: parseInt(page),
+            limit: parseInt(limit),
+            searchTerm,
+        });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

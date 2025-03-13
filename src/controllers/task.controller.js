@@ -5,13 +5,42 @@ import { StatutTache, Task, TypeTache } from '../models/task.model.js';
 // ****************************************************
 export const getAllTasks = async (req, res) => {
     try {
-        const tasks = await Task.find()
+        const { page = 1, limit = 10, searchTerm = '', id_collaborateur } = req.query;
+        const skip = (page - 1) * limit;
+
+        const searchQuery = searchTerm
+            ? {
+                $or: [
+                    { name: { $regex: searchTerm, $options: 'i' } },
+                    { description: { $regex: searchTerm, $options: 'i' } },
+                ],
+            }
+            : {};
+
+        let query = Task.find(searchQuery);
+
+        if (id_collaborateur) {
+            query = query.where('id_collaborateur').equals(id_collaborateur);
+        }
+
+        const tasks = await query
             .populate('id_projet')
             .populate('statut_tache')
             .populate('type_tache')
             .populate('id_collaborateur')
-            .populate('id_client');
-        res.json({ data: tasks });
+            .populate('id_client')
+            .skip(skip)
+            .limit(parseInt(limit));
+
+        const total = await Task.countDocuments(searchQuery);
+
+        res.json({
+            data: tasks,
+            total,
+            page: parseInt(page),
+            limit: parseInt(limit),
+            searchTerm,
+        });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

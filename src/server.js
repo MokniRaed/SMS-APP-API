@@ -6,6 +6,7 @@ import mongoose from 'mongoose';
 
 import articleRoutes from './routes/article.routes.js';
 import authRoutes from './routes/auth.routes.js';
+import categoryRoutes from './routes/category.routes.js';
 import clientRoutes from './routes/client.routes.js';
 import orderRoutes from './routes/order.routes.js';
 import projectRoutes from './routes/project.routes.js';
@@ -51,6 +52,7 @@ mongoose.connect(process.env.MONGODB_URI)
 app.use('/api/auth', authRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/projects', projectRoutes);
+app.use('/api/categories', categoryRoutes);
 app.use('/api/articles', articleRoutes);
 app.use('/api/orders', orderRoutes);
 
@@ -74,3 +76,10 @@ app.listen(PORT, () => {
 export default (req, res) => {
   app(req, res);  // This is what Vercel needs, it calls the Express app
 };
+
+
+
+// app.use((err, req, res, next) => {
+//   console.error(err.stack);
+//   res.status(500).json({ error: 'Something went wrong!' });
+// });
