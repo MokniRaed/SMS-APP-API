@@ -1,4 +1,5 @@
 import { Article } from '../models/article.model.js';
+import { ContactClient } from '../models/client.model.js';
 import { Command, LineCommand, StatutArtCmd, StatutCmd } from '../models/command.model.js';
 
 export const getAllCommands = async (req, res) => {
@@ -13,8 +14,20 @@ export const getAllCommands = async (req, res) => {
       query = query.where('id_collaborateur').equals(req.query.id_collaborateur);
     }
 
-    const commands = await query.populate('id_client id_collaborateur statut_cmd');
-    res.status(200).json({ data: commands });
+    const commands = await query.populate('id_collaborateur statut_cmd'); // Remove id_client from populate
+
+    // Manually populate id_client
+    const populatedCommands = await Promise.all(
+      commands.map(async (command) => {
+        const contactClient = await ContactClient.findOne({ id_client: command.id_client });
+        return {
+          ...command.toObject(),
+          id_client: contactClient,
+        };
+      })
+    );
+
+    res.status(200).json({ data: populatedCommands });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -358,8 +371,13 @@ export const getStatutArtCmdById = async (req, res) => {
 
 // Update statutArtCmd by ID
 export const updateStatutArtCmd = async (req, res) => {
+  const { description } = req.body;
+  console.log("desc", description);
+  console.log("id", req.params.id);
+
+
   try {
-    const updatedStatutArtCmd = await StatutArtCmd.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    const updatedStatutArtCmd = await StatutArtCmd.findByIdAndUpdate(req.params.id, { description: description });
     if (!updatedStatutArtCmd) {
       return res.status(404).json({ message: 'StatutArtCmd not found' });
     }

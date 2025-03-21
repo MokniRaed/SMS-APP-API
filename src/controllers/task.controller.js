@@ -5,7 +5,7 @@ import { StatutTache, Task, TypeTache } from '../models/task.model.js';
 // ****************************************************
 export const getAllTasks = async (req, res) => {
     try {
-        const { page = 1, limit = 10, searchTerm = '', id_collaborateur } = req.query;
+        const { page = 1, limit = 10, searchTerm = '', id_collaborateur, start, end } = req.query;
         const skip = (page - 1) * limit;
 
         const searchQuery = searchTerm
@@ -21,6 +21,15 @@ export const getAllTasks = async (req, res) => {
 
         if (id_collaborateur) {
             query = query.where('id_collaborateur').equals(id_collaborateur);
+        }
+
+        if (start && end) {
+            query = query.where({
+                $or: [
+                    { date_tache: { $gte: start, $lte: end } },
+                    { date_execution_tache: { $gte: start, $lte: end } }
+                ]
+            });
         }
 
         const tasks = await query

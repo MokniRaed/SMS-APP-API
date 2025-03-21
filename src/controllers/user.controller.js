@@ -1,4 +1,5 @@
 import bcrypt from 'bcryptjs';
+import { ContactClient } from '../models/client.model.js';
 import { Role, User } from '../models/user.model.js';
 
 // ================== Role Controllers ================== //
@@ -294,5 +295,49 @@ export const deleteUser = async (req, res) => {
         res.status(200).json({ message: 'User deleted successfully' });
     } catch (error) {
         res.status(400).json({ message: error.message });
+    }
+};
+
+export const createFromClient = async (req, res) => {
+    try {
+        const { clientId } = req.params;
+
+        // Find the ContactClient by ID
+        const contactClient = await ContactClient.findOne({ id_client: clientId });
+        if (!contactClient) {
+            return res.status(404).json({ message: 'ContactClient not found' });
+        }
+        console.log("contactClient", contactClient);
+
+
+        // Check if adresse_email exists
+        if (!contactClient.adresse_email) {
+            return res.status(400).json({ message: 'Email address is required' });
+        }
+
+        // Assuming a default role named 'client' exists
+        const clientRole = await Role.findOne({ name: 'client' });
+        if (!clientRole) {
+            return res.status(400).json({ message: 'Client role not found. Please create a role named "client".' });
+        }
+
+        // Create the new user
+        const username = contactClient.nom_prenom_contact || contactClient.adresse_email.split('@')[0];
+        const password = 'defaultPassword'; // Replace with a more robust password generation
+
+        const newUser = new User({
+            username: username,
+            email: contactClient.adresse_email,
+            password: password,
+            clientId: clientId, // Set the clientId
+            role: clientRole._id,
+        });
+
+        await newUser.save();
+
+        res.status(201).json({ message: 'User created from ContactClient successfully', user: newUser });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
     }
 };

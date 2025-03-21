@@ -1,5 +1,6 @@
 import express from 'express';
 import {
+    createFromClient,
     createRole,
     createUser,
     deleteRole,
@@ -40,5 +41,8 @@ router.get('/role/:role', getAllUsersByrole); // Get all users
 router.get('/:id', getUserById); // Get a specific user by ID
 router.patch('/:id', updateUser); // Update a user by ID
 router.delete('/:id', deleteUser); // Delete a user by ID
+
+
+router.post('/createFromClient/:clientId', createFromClient);
 
 export default router;

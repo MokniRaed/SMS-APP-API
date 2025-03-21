@@ -1,5 +1,5 @@
 import express from 'express';
-import { addCommandLine, createCommand, createStatutArtCmd, createStatutCmd, deleteCommand, deleteStatutArtCmd, deleteStatutCmd, getAllCommands, getAllStatutArtCmds, getAllStatutCmds, getCommandById, getLineCommandsbyOrder, getStatutArtCmdById, getStatutCmdById, updateStatutArtCmd, updateStatutCmd, validateOrder } from '../controllers/command.controller.js';
+import { addCommandLine, createCommand, createStatutCmd, deleteCommand, deleteStatutCmd, getAllCommands, getAllStatutArtCmds, getAllStatutCmds, getCommandById, getLineCommandsbyOrder, getStatutArtCmdById, getStatutCmdById, updateStatutArtCmd, updateStatutCmd, validateOrder } from '../controllers/command.controller.js';
 
 const router = express.Router();
 
@@ -14,10 +14,10 @@ router.delete('/statutcmds/:id', deleteStatutCmd);
 
 // ** StatutArtCmd Routes ** 
 router.get('/statutartcmds', getAllStatutArtCmds);
-router.post('/statutartcmds', createStatutArtCmd);
+// router.post('/statutartcmds', createStatutArtCmd);
 router.get('/statutartcmds/:id', getStatutArtCmdById);
-router.put('/statutartcmds/:id', updateStatutArtCmd);
-router.delete('/statutartcmds/:id', deleteStatutArtCmd);
+router.patch('/statutartcmds/:id', updateStatutArtCmd);
+// router.delete('/statutartcmds/:id', deleteStatutArtCmd);
 
 // ** CommandLines Routes ** 
 
