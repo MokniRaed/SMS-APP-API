@@ -1,11 +1,9 @@
 import express from 'express';
 import {
-    createTask,
-    createTypeTask,
-    deleteTask,
-    deleteTypeTask,
+    createTask, createTaskStatus, createTypeTask,
+    deleteTask, deleteTaskStatus, deleteTypeTask,
     getAllTasks, getAllTaskStatus, getAllTypeTasks,
-    getTaskById, getTaskStatus, getTypeTask,
+    getTaskById, getTaskStatus, getTaskStatusByName, getTypeTask,
     updateTask, updateTaskStatus, updateTypeTask
 } from '../controllers/task.controller.js';
 
@@ -20,10 +18,11 @@ router.patch('/taskType/:id', updateTypeTask);
 router.delete('/taskType/:id', deleteTypeTask);
 
 router.get('/taskStatus', getAllTaskStatus);
+router.get('/taskStatusByName', getTaskStatusByName );
 router.get('/taskStatus/:id', getTaskStatus);
-// router.post('/taskStatus', createTaskStatus);
+router.post('/taskStatus', createTaskStatus);
 router.patch('/taskStatus/:id', updateTaskStatus);
-// router.delete('/taskStatus/:id', deleteTaskStatus);
+router.delete('/taskStatus/:id', deleteTaskStatus);
 
 
 

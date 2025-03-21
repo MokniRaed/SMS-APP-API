@@ -4,10 +4,8 @@ import { StatutTache, Task, TypeTache } from '../models/task.model.js';
 // ******** Controller Code for Tasks  ********* //
 // ****************************************************
 export const getAllTasks = async (req, res) => {
-    console.log(" req.query", req.query);
-
     try {
-        const { page = 1, limit = 10, searchTerm = '', id_collaborateur, start, end } = req.query;
+        const { page = 1, limit = 10, searchTerm = '', id_collaborateur } = req.query;
         const skip = (page - 1) * limit;
 
         const searchQuery = searchTerm
@@ -23,15 +21,6 @@ export const getAllTasks = async (req, res) => {
 
         if (id_collaborateur) {
             query = query.where('id_collaborateur').equals(id_collaborateur);
-        }
-
-        if (start && end) {
-            query = query.where({
-                $or: [
-                    { date_tache: { $gte: start, $lte: end } },
-                    { date_execution_tache: { $gte: start, $lte: end } }
-                ]
-            });
         }
 
         const tasks = await query
@@ -207,6 +196,21 @@ export const getAllTaskStatus = async (req, res) => {
     }
 };
 
+export const getTaskStatusByName = async (req, res) => {
+
+    console.log("req.query.name",req.query.name);
+    
+    try {
+   const statusTask= await StatutTache.findOne({ nom_statut_tch: req.query.name })
+           console.log("statusTask",statusTask);
+           
+        res.json({ data: statusTask })
+    
+} catch (error) {
+    res.status(500).json({ message: error.message });
+}
+};
+
 
 export const getTaskStatus = async (req, res) => {
     try {
@@ -235,12 +239,11 @@ export const createTaskStatus = async (req, res) => {
 
 
 export const updateTaskStatus = async (req, res) => {
-    const { description_statut_tch } = req.body
     try {
         const statusTask = await StatutTache.findByIdAndUpdate(
             req.params.id,
-            { description_statut_tch: description_statut_tch },
-            // { new: true }
+            req.body,
+            { new: true }
         );
         if (!statusTask) {
             return res.status(404).json({ message: 'Status Task not found' });

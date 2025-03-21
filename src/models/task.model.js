@@ -21,7 +21,7 @@ const statutTacheSchema = new mongoose.Schema({
   },
   description_statut_tch: {
     type: String,
-    required: true,
+    // required: true,
   },
 }, {
   timestamps: true,
@@ -47,7 +47,7 @@ const taskSchema = new mongoose.Schema({
   id_collaborateur: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: true,
+    // required: true,
   },
   date_tache: {
     type: Date,

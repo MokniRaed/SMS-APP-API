@@ -19,6 +19,7 @@ const userSchema = new mongoose.Schema({
   username: {
     type: String,
     required: true,
+    unique: true,
     trim: true
   },
   email: {
@@ -31,10 +32,6 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: true
-  },
-  clientId: {
-    type: String, // Or mongoose.Schema.Types.ObjectId if ContactClient.id is an ObjectId
-    required: false, // Make it optional in case some users aren't associated with a ContactClient
   },
   role: {
     type: mongoose.Schema.Types.ObjectId,
@@ -61,3 +58,5 @@ userSchema.methods.comparePassword = async function (candidatePassword) {
 
 export const User = mongoose.model('User', userSchema);
 export const Role = mongoose.model('Role', roleSchema);
+
+

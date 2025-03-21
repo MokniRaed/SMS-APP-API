@@ -30,13 +30,14 @@ const commandSchema = new mongoose.Schema({
     required: true
   },
   id_client: {
-    type: String,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'ContactClient',
     required: true
   },
   id_collaborateur: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    // required: true
+    required: true
   },
   statut_cmd: {
     type: mongoose.Schema.Types.ObjectId,

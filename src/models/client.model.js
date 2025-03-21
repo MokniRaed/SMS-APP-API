@@ -88,11 +88,7 @@ const contactClientSchema = new mongoose.Schema({
   compte_linkedin: String,
   compte_whatsapp: String,
   compte_whatsapp_num: String,
-  canal_interet: String,
-  is_user: {
-    type: String,
-    default: false
-  },
+  canal_interet: String
 });
 
 

@@ -66,8 +66,7 @@ export const login = async (req, res) => {
     const token = jwt.sign(
       {
         userId: user._id,
-        role: user.role.name,
-        clientId: user.clientId
+        role: user.role.name
       },
       process.env.JWT_SECRET,
       { expiresIn: '24h' }
@@ -81,23 +80,13 @@ export const login = async (req, res) => {
       maxAge: 24 * 60 * 60 * 1000 // 1 day
     });
 
-    //  // Set the token in the cookies (httpOnly, secure, sameSite)
-    //  res.cookie('token', token, {
-    //   httpOnly: true, // So it can't be accessed via JavaScript
-    //   // secure: true,
-    //   sameSite: 'None',
-    //   maxAge: 24 * 60 * 60 * 1000, // 1 day
-    //   path: '/',
-    // });
-
     // Send user data along with the token (but without sending the token directly in the response body)
     return res.json({
       user: {
         id: user._id,
         username: user.username,
         email: user.email,
-        role: user.role.name,
-        clientId: user.clientId
+        role: user.role.name
       }
     });
   } catch (error) {

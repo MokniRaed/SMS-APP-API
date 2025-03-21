@@ -1,7 +1,5 @@
 import xlsx from 'xlsx';
-
 import { ContactClient, EquipementClient, FonctionContact, InformationLibre, TypeInfoLibre } from '../models/client.model.js';
-import { Role, User } from '../models/user.model.js';
 
 // export const getAllClients = async (req, res) => {
 //   try {
@@ -190,9 +188,6 @@ export const uploadContacts = async (req, res) => {
     const sheetName = workbook.SheetNames[0]; // Get the first sheet
     const sheet = workbook.Sheets[sheetName];
     const data = xlsx.utils.sheet_to_json(sheet); // Convert sheet to JSON
-    console.log("data excel client", data.User);
-    console.log("data excel client", data[9]);
-    console.log("data excel client", data);
 
     // Map Excel data to ContactClient schema
     const contacts = data.map((row) => ({
@@ -207,50 +202,11 @@ export const uploadContacts = async (req, res) => {
       compte_linkedin: row['LinkedIn'],
       compte_whatsapp: row['WhatsApp'],
       compte_whatsapp_num: row['WhatsApp Number'],
-      canal_interet: row['Preferred Channel'],
-      is_user: row['User'] === true // Read the "User" column and check if it's "true"
+      canal_interet: row['Preferred Channel']
     }));
 
     // Save contacts to the database
     await ContactClient.insertMany(contacts);
-
-    // Create users for contacts where is_user is true
-    for (const contact of contacts) {
-      if (contact.is_user) {
-        try {
-          // Find the ContactClient by ID
-          const contactClient = await ContactClient.findOne({ adresse_email: contact.adresse_email });
-          if (!contactClient) {
-            console.log(`ContactClient not found for email: ${contact.adresse_email}`);
-            continue;
-          }
-
-          // Assuming a default role named 'client' exists
-          const clientRole = await Role.findOne({ name: 'client' });
-          if (!clientRole) {
-            console.log('Client role not found. Please create a role named "client".');
-            continue;
-          }
-
-          // Create the new user
-          const username = contact.nom_prenom_contact || contact.adresse_email.split('@')[0];
-          const password = 'defaultPassword'; // Replace with a more robust password generation
-
-          const newUser = new User({
-            username: username,
-            email: contact.adresse_email,
-            password: password,
-            clientId: contact.id_client, // Set the clientId
-            role: clientRole._id,
-          });
-
-          await newUser.save();
-          console.log(`User created for email: ${contact.adresse_email}`);
-        } catch (error) {
-          console.error(`Error creating user for email: ${contact.adresse_email}`, error);
-        }
-      }
-    }
 
     res.status(201).json({ message: 'Contacts uploaded successfully', contacts });
   } catch (error) {
