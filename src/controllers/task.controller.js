@@ -4,6 +4,8 @@ import { StatutTache, Task, TypeTache } from '../models/task.model.js';
 // ******** Controller Code for Tasks  ********* //
 // ****************************************************
 export const getAllTasks = async (req, res) => {
+    console.log(" req.query", req.query);
+
     try {
         const { page = 1, limit = 10, searchTerm = '', id_collaborateur, start, end } = req.query;
         const skip = (page - 1) * limit;
@@ -233,11 +235,12 @@ export const createTaskStatus = async (req, res) => {
 
 
 export const updateTaskStatus = async (req, res) => {
+    const { description_statut_tch } = req.body
     try {
         const statusTask = await StatutTache.findByIdAndUpdate(
             req.params.id,
-            req.body,
-            { new: true }
+            { description_statut_tch: description_statut_tch },
+            // { new: true }
         );
         if (!statusTask) {
             return res.status(404).json({ message: 'Status Task not found' });
