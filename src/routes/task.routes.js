@@ -1,7 +1,8 @@
 import express from 'express';
 import {
     createTask, createTaskStatus, createTypeTask,
-    deleteTask, deleteTaskStatus, deleteTypeTask,
+    deleteTask,
+    deleteTypeTask,
     getAllTasks, getAllTaskStatus, getAllTypeTasks,
     getTaskById, getTaskStatus, getTaskStatusByName, getTypeTask,
     updateTask, updateTaskStatus, updateTypeTask
@@ -18,11 +19,11 @@ router.patch('/taskType/:id', updateTypeTask);
 router.delete('/taskType/:id', deleteTypeTask);
 
 router.get('/taskStatus', getAllTaskStatus);
-router.get('/taskStatusByName', getTaskStatusByName );
+router.get('/taskStatusByName', getTaskStatusByName);
 router.get('/taskStatus/:id', getTaskStatus);
 router.post('/taskStatus', createTaskStatus);
 router.patch('/taskStatus/:id', updateTaskStatus);
-router.delete('/taskStatus/:id', deleteTaskStatus);
+// router.delete('/taskStatus/:id', deleteTaskStatus);
 
 
 

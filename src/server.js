@@ -48,6 +48,14 @@ mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('Connected to MongoDB'))
   .catch(err => console.error('MongoDB connection error:', err));
 
+
+// Middleware to log path and time
+app.use((req, res, next) => {
+  const timestamp = new Date().toISOString(); // Get current time
+  console.log(`[${timestamp}] ${req.method} ${req.path}`); // Log method, path, and time
+  next(); // Move to the next middleware/route
+});
+
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/tasks', taskRoutes);
