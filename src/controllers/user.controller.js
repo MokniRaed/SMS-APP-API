@@ -306,20 +306,20 @@ export const createFromClient = async (req, res) => {
         // Find the ContactClient by ID
         const contactClient = await ContactClient.findOne({ id_client: clientId });
         if (!contactClient) {
-            return res.status(404).json({ message: 'ContactClient not found' });
+            return res.status(404).json({status:404, message: 'ContactClient not found' });
         }
         console.log("contactClient", contactClient);
 
 
         // Check if adresse_email exists
         if (!contactClient.adresse_email) {
-            return res.status(400).json({ message: 'Email address is required' });
+            return res.status(400).json({status:400, message: 'Email address is required' });
         }
 
         // Assuming a default role named 'client' exists
         const clientRole = await Role.findOne({ name: 'client' });
         if (!clientRole) {
-            return res.status(400).json({ message: 'Client role not found. Please create a role named "client".' });
+            return res.status(400).json({status:400, message: 'Client role not found. Please create a role named "client".' });
         }
 
         // Create the new user
@@ -335,10 +335,14 @@ export const createFromClient = async (req, res) => {
         });
 
         await newUser.save();
+        // Set the is_user field to true for this contactClient
+        contactClient.is_user = true;
+        await contactClient.save();
 
-        res.status(201).json({ message: 'User created from ContactClient successfully', user: newUser });
+        res.status(201).json({ message: 'User created from ContactClient successfully',  status: 201,
+        });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({status:500, message: 'Server error' });
     }
 };

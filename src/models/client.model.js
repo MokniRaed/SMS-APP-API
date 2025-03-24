@@ -1,3 +1,4 @@
+import { request } from 'express';
 import mongoose from 'mongoose';
 
 
@@ -90,8 +91,8 @@ const contactClientSchema = new mongoose.Schema({
   compte_whatsapp_num: String,
   canal_interet: String,
   is_user: {
-    type: String,
-    default: false
+    type: Boolean,
+    default:false
   },
 });
 
