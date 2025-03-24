@@ -14,10 +14,10 @@ router.delete('/statutcmds/:id', deleteStatutCmd);
 
 // ** StatutArtCmd Routes ** 
 router.get('/statutartcmds', getAllStatutArtCmds);
-router.post('/statutartcmds', createStatutArtCmd);
+// router.post('/statutartcmds', createStatutArtCmd);
 router.get('/statutartcmds/:id', getStatutArtCmdById);
-router.put('/statutartcmds/:id', updateStatutArtCmd);
-router.delete('/statutartcmds/:id', deleteStatutArtCmd);
+router.patch('/statutartcmds/:id', updateStatutArtCmd);
+// router.delete('/statutartcmds/:id', deleteStatutArtCmd);
 
 // ** CommandLines Routes ** 
 

@@ -21,7 +21,7 @@ router.delete('/taskType/:id', deleteTypeTask);
 router.get('/taskStatus', getAllTaskStatus);
 router.get('/taskStatusByName', getTaskStatusByName);
 router.get('/taskStatus/:id', getTaskStatus);
-router.post('/taskStatus', createTaskStatus);
+// router.post('/taskStatus', createTaskStatus);
 router.patch('/taskStatus/:id', updateTaskStatus);
 // router.delete('/taskStatus/:id', deleteTaskStatus);
 

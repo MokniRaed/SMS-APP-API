@@ -5,7 +5,7 @@ import { StatutTache, Task, TypeTache } from '../models/task.model.js';
 // ****************************************************
 export const getAllTasks = async (req, res) => {
     try {
-        const { page = 1, limit = 10, searchTerm = '', id_collaborateur } = req.query;
+        const { page = 1, limit = 10, searchTerm = '', id_collaborateur ,start, end} = req.query;
         const skip = (page - 1) * limit;
 
         const searchQuery = searchTerm
@@ -18,6 +18,17 @@ export const getAllTasks = async (req, res) => {
             : {};
 
         let query = Task.find(searchQuery);
+
+
+        if (start && end) {
+            query = query.where({
+                $or: [
+                    { date_tache: { $gte: start, $lte: end } },
+                    { date_execution_tache: { $gte: start, $lte: end } }
+                ]
+            });
+        }
+
 
         if (id_collaborateur) {
             query = query.where('id_collaborateur').equals(id_collaborateur);
@@ -239,11 +250,13 @@ export const createTaskStatus = async (req, res) => {
 
 
 export const updateTaskStatus = async (req, res) => {
+    const { description_statut_tch } = req.body
     try {
         const statusTask = await StatutTache.findByIdAndUpdate(
             req.params.id,
-            req.body,
-            { new: true }
+            { description_statut_tch: description_statut_tch },
+            // req.body,
+            // { new: true }
         );
         if (!statusTask) {
             return res.status(404).json({ message: 'Status Task not found' });
