@@ -2,32 +2,32 @@ import xlsx from 'xlsx';
 import { ProduitCible, Project, StatutProjet, TypeProjet, ZoneCible } from '../models/project.model.js';
 
 export const getAllProjects = async (req, res) => {
+  const { page = 1, limit = 10, searchTerm = '' } = req.query;
   try {
-    const { page = 1, limit = 10, searchTerm = '' } = req.query;
     const skip = (page - 1) * limit;
 
-    const searchQuery = searchTerm
+    let searchQuery = searchTerm
       ? {
-        $or: [
-          { name: { $regex: searchTerm, $options: 'i' } },
-          { description: { $regex: searchTerm, $options: 'i' } },
-        ],
-      }
+          $or: [
+            { name: { $regex: searchTerm, $options: 'i' } },
+            { description: { $regex: searchTerm, $options: 'i' } },
+          ],
+        }
       : {};
 
     const projects = await Project.find(searchQuery)
       .populate('type_projet produit_cible statut_projet zone_cible')
       .skip(skip)
-      .limit(parseInt(limit));
+      .limit(limit * 1)
+      .exec();
 
     const total = await Project.countDocuments(searchQuery);
 
     res.json({
+      total: total,
+      limit: limit,
+      page: page,
       data: projects,
-      total,
-      page: parseInt(page),
-      limit: parseInt(limit),
-      searchTerm,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });

@@ -126,13 +126,30 @@ export const addClientContact = async (req, res) => {
 
 // Get all contacts for a specific client
 export const getClientContacts = async (req, res) => {
+  const { page = 1, limit = 10 } = req.query;
+
   try {
-    const contacts = await ContactClient.find().populate("fonction_contact");
-    res.json({ data: contacts });
+    const contacts = await ContactClient.find()
+      .limit(limit * 1)
+      .skip((page - 1) * limit)
+      .populate("fonction_contact")
+      .exec();
+
+    // get total documents in the Posts collection
+    const count = await ContactClient.countDocuments();
+
+    // return response with posts, total pages, and current page
+    res.json({
+      total: count,
+      limit: limit,
+      page: page,
+      data: contacts,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 // Get a specific contact by ID
 export const getContactById = async (req, res) => {

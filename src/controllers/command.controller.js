@@ -4,6 +4,8 @@ import { ContactClient } from '../models/client.model.js';
 import { Command, LineCommand, StatutArtCmd, StatutCmd } from '../models/command.model.js';
 
 export const getAllCommands = async (req, res) => {
+  const { page = 1, limit = 10 } = req.query;
+
   try {
     let query = Command.find();
 
@@ -15,7 +17,11 @@ export const getAllCommands = async (req, res) => {
       query = query.where('id_collaborateur').equals(req.query.id_collaborateur);
     }
 
-    const commands = await query.populate('id_collaborateur statut_cmd'); // Remove id_client from populate
+    const commands = await query
+      .limit(limit * 1)
+      .skip((page - 1) * limit)
+      .populate('id_collaborateur statut_cmd')
+      .exec();
 
     // Manually populate id_client
     const populatedCommands = await Promise.all(
@@ -28,7 +34,14 @@ export const getAllCommands = async (req, res) => {
       })
     );
 
-    res.status(200).json({ data: populatedCommands });
+    const count = await Command.countDocuments();
+
+    res.status(200).json({
+      total: count,
+      limit: limit,
+      page: page,
+      data: populatedCommands,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
