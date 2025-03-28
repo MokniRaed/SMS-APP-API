@@ -1,5 +1,7 @@
 import { StatutTache, Task, TypeTache } from '../models/task.model.js';
-
+import xlsx from 'xlsx';
+import path from 'path';
+import fs from 'fs';
 
 // ******** Controller Code for Tasks  ********* //
 // ****************************************************
@@ -116,6 +118,76 @@ export const deleteTask = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
+
+export const exportTasks = async (req, res) => {
+    try {
+    //   const { type } = req.query;
+  
+    //   if (!type) return res.status(400).json({ message: "Type parameter is required" });
+  
+    //   const allowedTypes = ["type_tache", "statut_tache"]; // Adjust based on the types you want to allow
+    //   if (!allowedTypes.includes(type)) {
+    //     return res.status(400).json({ message: "Invalid task type" });
+    //   }
+  
+      console.log("Fetching tasks...");
+      
+      // Ensure you're not accidentally filtering by _id
+      const tasks = await Task.find({})
+        .populate('type_tache', 'nom_type_tch') // Populate type_tache (adjust if the type is wrong here)
+        .populate('statut_tache', 'nom_statut_tch') // Populate statut_tache (same here)
+        .populate('id_client', 'nom_prenom_contact') // Populate statut_tache (same here)
+        .populate('id_collaborateur', 'username') // Populate statut_tache (same here)
+        .populate('id_projet', 'nom_projet') // Populate statut_tache (same here)
+        .select('title_tache type_tache id_client id_projet id_collaborateur date_tache description_tache adresse_tache date_execution_tache compte_rendu_tache statut_tache notes_tache -_id');
+        console.log("tasks",tasks);
+        
+      if (tasks.length === 0) {
+        return res.status(404).json({ message: "No tasks found for this type" });
+      }
+  
+      // Convert tasks to an array of objects for Excel export
+      const data = tasks.map(task => ({
+        title: task.title_tache,
+        type: task.type_tache ? task.type_tache.nom_type_tch : 'N/A', // Accessing the name of type_tache
+        statut: task.statut_tache ? task.statut_tache.nom_statut_tch : 'N/A', // Accessing the name of statut_tache
+        client: task.id_client? task.id_client.nom_prenom_contact : 'N/A',
+        project: task.id_projet? task.id_projet.nom_projet : 'N/A',
+        collaborator: task.id_collaborateur? task.id_collaborateur.username : 'N/A',
+        taskDate: task.date_tache,
+        description: task.description_tache,
+        address: task.adresse_tache,
+        executionDate: task.date_execution_tache,
+        report: task.compte_rendu_tache,
+        notes: task.notes_tache
+      }));
+      console.log("Creating Excel file...");
+      const worksheet = xlsx.utils.json_to_sheet(data);
+      const workbook = xlsx.utils.book_new();
+      xlsx.utils.book_append_sheet(workbook, worksheet, "Tasks");
+  
+      // Generate a safe filename based on the current date
+    const formattedDate = new Date().toISOString().replace(/[-:.]/g, "_"); // Safe filename format (YYYY_MM_DD_HH_mm_SS)
+    const filename = `tasks_${formattedDate}.xlsx`;
+
+    // Write the file to a buffer (in memory)
+    const buffer = xlsx.write(workbook, { bookType: 'xlsx', type: 'buffer' });
+
+    // Set headers to indicate the file type and attachment
+    res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    
+    // Send the buffer directly
+    res.send(buffer);
+
+    console.log("File sent successfully!");
+
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Error exporting tasks', error: error.message });
+    }
+  };
 // ****************************************************
 // ****************************************************
 

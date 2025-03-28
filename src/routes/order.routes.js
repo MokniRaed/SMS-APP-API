@@ -1,5 +1,5 @@
 import express from 'express';
-import { addCommandLine, createCommand, createStatutArtCmd, createStatutCmd, deleteCommand, deleteStatutArtCmd, deleteStatutCmd, getAllCommands, getAllStatutArtCmds, getAllStatutCmds, getCommandById, getLineCommandsbyOrder, getStatutArtCmdById, getStatutCmdById, updateStatutArtCmd, updateStatutCmd, validateOrder } from '../controllers/command.controller.js';
+import { addCommandLine, createCommand, createStatutArtCmd, createStatutCmd, deleteCommand, deleteStatutArtCmd, deleteStatutCmd, exportCommands, getAllCommands, getAllStatutArtCmds, getAllStatutCmds, getCommandById, getLineCommandsbyOrder, getStatutArtCmdById, getStatutCmdById, updateStatutArtCmd, updateStatutCmd, validateOrder } from '../controllers/command.controller.js';
 
 const router = express.Router();
 
@@ -31,6 +31,8 @@ router.delete('/:id', deleteCommand);
 
 router.post('/:id/lines', addCommandLine);
 router.patch('/validate/:id', validateOrder);
+router.post('/export', exportCommands);
+
 
 
 export default router;

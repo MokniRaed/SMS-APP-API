@@ -9,6 +9,7 @@ import {
   deleteFonctionContact,
   deleteInformationLibre,
   deleteTypeInfoLibre,
+  exportContactClients,
   getAllFonctionContacts,
   getAllInformationLibres,
   getAllTypeInfoLibres,
@@ -35,6 +36,8 @@ router.patch('/contacts/:contactId', updateContact); // Update a contact by ID
 router.delete('/contacts/:contactId', deleteContact); // Delete a contact by ID
 // Upload Excel file and save client contacts
 router.post('/upload-contacts', upload.single('file'), uploadContacts);
+router.post('/export-contacts', exportContactClients);
+
 
 // ================== FonctionContact Routes ================== //
 

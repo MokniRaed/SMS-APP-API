@@ -1,6 +1,6 @@
 import express from 'express';
 import { upload } from '../config/multer.js';
-import { createProduitCible, createProject, createProjectStatus, createTypeProject, deleteProduitCible, deleteProject, deleteProjectStatus, deleteTypeProject, getAllProduitsCible, getAllProjects, getAllProjectsStatus, getAllTypeProjects, getAllZones, getProduitCibleById, getProjectById, getProjectStatus, getTypeProjectById, updateProduitCible, updateProject, updateProjectStatus, updateTypeProject, uploadZones } from '../controllers/project.controller.js';
+import { createProduitCible, createProject, createProjectStatus, createTypeProject, deleteProduitCible, deleteProject, deleteProjectStatus, deleteTypeProject, exportProjects, getAllProduitsCible, getAllProjects, getAllProjectsStatus, getAllTypeProjects, getAllZones, getProduitCibleById, getProjectById, getProjectStatus, getTypeProjectById, updateProduitCible, updateProject, updateProjectStatus, updateTypeProject, uploadZones } from '../controllers/project.controller.js';
 
 const router = express.Router();
 
@@ -39,5 +39,6 @@ router.patch('/:id', updateProject);
 router.delete('/:id', deleteProject);
 // Upload Excel file and save zones 
 router.post('/upload-zones', upload.single('file'), uploadZones);
+router.post('/export', exportProjects);
 
 export default router;

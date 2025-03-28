@@ -273,6 +273,67 @@ export const uploadContacts = async (req, res) => {
   }
 };
 
+
+export const exportContactClients = async (req, res) => {
+  try {
+    console.log("Fetching contact clients...");
+
+    // Fetch contact clients and populate related fields (FonctionContact)
+    const contactClients = await ContactClient.find({})
+      .populate('fonction_contact', 'nom_fonction_contact') // Populate fonction_contact
+      .select('id_client nom_prenom_contact fonction_contact numero_fix numero_mobile adresse_email compte_facebook compte_instagram compte_linkedin compte_whatsapp compte_whatsapp_num canal_interet is_user -_id');
+
+    console.log("contactClients", contactClients);
+
+    if (contactClients.length === 0) {
+      return res.status(404).json({ message: "No contact clients found" });
+    }
+
+    // Convert contact clients to an array of objects for Excel export
+    const data = contactClients.map(client => ({
+      clientId: client.id_client,
+      name: client.nom_prenom_contact || 'N/A',
+      function: client.fonction_contact ? client.fonction_contact.nom_fonction_contact : 'N/A',
+      phoneNumber: client.numero_fix || 'N/A',
+      mobileNumber: client.numero_mobile || 'N/A',
+      email: client.adresse_email || 'N/A',
+      facebook: client.compte_facebook || 'N/A',
+      instagram: client.compte_instagram || 'N/A',
+      linkedin: client.compte_linkedin || 'N/A',
+      whatsapp: client.compte_whatsapp || 'N/A',
+      whatsappNumber: client.compte_whatsapp_num || 'N/A',
+      interestChannel: client.canal_interet || 'N/A',
+      isUser: client.is_user ? 'Yes' : 'No'
+    }));
+
+    console.log("Creating Excel file...");
+    const worksheet = xlsx.utils.json_to_sheet(data);
+    const workbook = xlsx.utils.book_new();
+    xlsx.utils.book_append_sheet(workbook, worksheet, "ContactClients");
+
+    // Generate a safe filename based on the current date
+    const formattedDate = new Date().toISOString().replace(/[-:.]/g, "_"); // Safe filename format (YYYY_MM_DD_HH_mm_SS)
+    const filename = `contact_clients_${formattedDate}.xlsx`;
+
+    // Write the file to a buffer (in memory)
+    const buffer = xlsx.write(workbook, { bookType: 'xlsx', type: 'buffer' });
+
+    // Set headers to indicate the file type and attachment
+    res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    
+    // Send the buffer directly
+    res.send(buffer);
+
+    console.log("File sent successfully!");
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error exporting contact clients', error: error.message });
+  }
+};
+
+
 // ******** Controller Code for functionContact ********* //
 
 // Create a new function contact

@@ -1,3 +1,4 @@
+import xlsx from "xlsx";
 import { Article } from '../models/article.model.js';
 import { ContactClient } from '../models/client.model.js';
 import { Command, LineCommand, StatutArtCmd, StatutCmd } from '../models/command.model.js';
@@ -73,6 +74,60 @@ export const createCommand = async (req, res) => {
     console.log("error", error);
 
     res.status(400).json({ message: error.message });
+  }
+};
+
+
+export const exportCommands = async (req, res) => {
+  try {
+    console.log("Fetching commands...");
+
+    // Fetch commands and populate related fields (client, collaborator, and status)
+    const commands = await Command.find({})
+      .populate('id_collaborateur', 'username') // Populate collaborator's username
+      .populate('statut_cmd', 'value description') // Populate status' value and description
+      .select('date_cmd id_client id_collaborateur statut_cmd date_livraison notes_cmd -_id'); // Select relevant fields
+
+    console.log("commands", commands);
+
+    if (commands.length === 0) {
+      return res.status(404).json({ message: "No commands found" });
+    }
+
+    // Convert commands to an array of objects for Excel export
+    const data = commands.map(command => ({
+      date: command.date_cmd ? command.date_cmd.toISOString().split('T')[0] : 'N/A', // Format date as YYYY-MM-DD
+      client: command.id_client || 'N/A', // Assuming id_client is just a string
+      collaborator: command.id_collaborateur ? command.id_collaborateur.username : 'N/A', // Username of collaborator
+      status: command.statut_cmd ? `${command.statut_cmd.value} - ${command.statut_cmd.description}` : 'N/A', // Status description
+      deliveryDate: command.date_livraison ? command.date_livraison.toISOString().split('T')[0] : 'N/A', // Format delivery date
+      notes: command.notes_cmd || 'N/A', // Notes
+    }));
+
+    console.log("Creating Excel file...");
+    const worksheet = xlsx.utils.json_to_sheet(data);
+    const workbook = xlsx.utils.book_new();
+    xlsx.utils.book_append_sheet(workbook, worksheet, "Commands");
+
+    // Generate a safe filename based on the current date
+    const formattedDate = new Date().toISOString().replace(/[-:.]/g, "_"); // Safe filename format (YYYY_MM_DD_HH_mm_SS)
+    const filename = `commands_${formattedDate}.xlsx`;
+
+    // Write the file to a buffer (in memory)
+    const buffer = xlsx.write(workbook, { bookType: 'xlsx', type: 'buffer' });
+
+    // Set headers to indicate the file type and attachment
+    res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    
+    // Send the buffer directly
+    res.send(buffer);
+
+    console.log("File sent successfully!");
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error exporting commands', error: error.message });
   }
 };
 

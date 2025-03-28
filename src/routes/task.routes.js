@@ -3,6 +3,7 @@ import {
     createTask, createTaskStatus, createTypeTask,
     deleteTask,
     deleteTypeTask,
+    exportTasks,
     getAllTasks, getAllTaskStatus, getAllTypeTasks,
     getTaskById, getTaskStatus, getTaskStatusByName, getTypeTask,
     updateTask, updateTaskStatus, updateTypeTask
@@ -36,5 +37,6 @@ router.patch('/:id', updateTask);
 //check again for permessions
 // router.delete('/:id', authorizeRole('admin'), deleteTask);
 router.delete('/:id', deleteTask);
+router.post('/export', exportTasks);
 
 export default router;

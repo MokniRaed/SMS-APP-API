@@ -88,6 +88,7 @@ export const deleteProject = async (req, res) => {
   }
 };
 
+
 // Upload Excel file and save client contacts
 export const uploadZones = async (req, res) => {
   try {
@@ -132,6 +133,68 @@ export const getAllZones = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 }
+
+
+export const exportProjects = async (req, res) => {
+  try {
+    console.log("Fetching projects...");
+
+    // Fetch projects and populate related fields
+    const projects = await Project.find({})
+      .populate('type_projet', 'nom_type_prj') // Populate type_projet
+      .populate('produit_cible', 'nom_produit_cible') // Populate produit_cible
+      .populate('zone_cible', 'zone_cible sous_Zone_cible') // Populate zone_cible
+      .populate('statut_projet', 'nom_statut_prj') // Populate statut_projet
+      .select('nom_projet type_projet produit_cible description_projet objectif_ca objectif_qte zone_cible periode_date_debut periode_date_fin statut_projet notes_projet -_id');
+
+    console.log("projects", projects);
+
+    if (projects.length === 0) {
+      return res.status(404).json({ message: "No projects found" });
+    }
+
+    // Convert projects to an array of objects for Excel export
+    const data = projects.map(project => ({
+      projectName: project.nom_projet,
+      projectType: project.type_projet ? project.type_projet.nom_type_prj : 'N/A',
+      targetProduct: project.produit_cible ? project.produit_cible.nom_produit_cible : 'N/A',
+      description: project.description_projet || 'N/A',
+      targetRevenue: project.objectif_ca || 'N/A',
+      targetQuantity: project.objectif_qte || 'N/A',
+      targetZone: project.zone_cible ? `${project.zone_cible.zone_cible} - ${project.zone_cible.sous_Zone_cible}` : 'N/A',
+      startDate: project.periode_date_debut ? project.periode_date_debut.toISOString().split('T')[0] : 'N/A', // Format date as YYYY-MM-DD
+      endDate: project.periode_date_fin ? project.periode_date_fin.toISOString().split('T')[0] : 'N/A', // Format date as YYYY-MM-DD
+      status: project.statut_projet ? project.statut_projet.nom_statut_prj : 'N/A',
+      notes: project.notes_projet || 'N/A'
+    }));
+
+    console.log("Creating Excel file...");
+    const worksheet = xlsx.utils.json_to_sheet(data);
+    const workbook = xlsx.utils.book_new();
+    xlsx.utils.book_append_sheet(workbook, worksheet, "Projects");
+
+    // Generate a safe filename based on the current date
+    const formattedDate = new Date().toISOString().replace(/[-:.]/g, "_"); // Safe filename format (YYYY_MM_DD_HH_mm_SS)
+    const filename = `projects_${formattedDate}.xlsx`;
+
+    // Write the file to a buffer (in memory)
+    const buffer = xlsx.write(workbook, { bookType: 'xlsx', type: 'buffer' });
+
+    // Set headers to indicate the file type and attachment
+    res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    
+    // Send the buffer directly
+    res.send(buffer);
+
+    console.log("File sent successfully!");
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error exporting projects', error: error.message });
+  }
+};
+
 
 
 // ******** Controller Code for TypeProjects ********* //
