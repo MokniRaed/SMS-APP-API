@@ -14,6 +14,7 @@ import {
   getAllInformationLibres,
   getAllTypeInfoLibres,
   getClientContacts,
+  getClientContactStats,
   getContactById,
   getFonctionContactById,
   getInformationLibreById,
@@ -63,7 +64,7 @@ router.get('/information-libres/:id', getInformationLibreById); // Get a specifi
 router.patch('/information-libres/:id', updateInformationLibre); // Update a free information by ID
 router.delete('/information-libres/:id', deleteInformationLibre); // Delete a free information by ID
 
-
+router.get('/stats', getClientContactStats);
 // router.get('/', getAllClients);
 // router.get('/:id', getClientDetails);
 // router.post('/', createClient);

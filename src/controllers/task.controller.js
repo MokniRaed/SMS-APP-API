@@ -191,6 +191,21 @@ export const exportTasks = async (req, res) => {
 // ****************************************************
 // ****************************************************
 
+// Get task statistics
+export const getTaskStats = async (req, res) => {
+  try {
+    const totalTasks = await Task.countDocuments();
+    const completedTasks = await Task.countDocuments({ 'statut_tache.nom_statut_tch': 'CLOSED' });
+
+    res.json({
+      totalTasks,
+      completedTasks,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 
 
 // ******** Controller Code for Task Types ********* //

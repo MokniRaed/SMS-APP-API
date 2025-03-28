@@ -47,6 +47,18 @@ export const getAllCommands = async (req, res) => {
   }
 };
 
+// Get order statistics
+export const getOrderStats = async (req, res) => {
+  try {
+    const totalOrders = await Command.countDocuments();
+    res.json({
+      totalOrders,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 export const createCommand = async (req, res) => {
   const { date_cmd, id_client, id_collaborateur, statut_cmd, date_livraison, notes_cmd, articles } = req.body;
 

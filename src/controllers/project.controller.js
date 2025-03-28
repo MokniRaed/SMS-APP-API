@@ -399,3 +399,18 @@ export const deleteProjectStatus = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+// Get project statistics
+export const getProjectStats = async (req, res) => {
+  try {
+    const totalProjects = await Project.countDocuments();
+    const activeProjects = await Project.countDocuments({ 'statut_projet.nom_statut_prj': 'PENDING' });
+
+    res.json({
+      totalProjects,
+      activeProjects,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

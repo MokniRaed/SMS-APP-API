@@ -76,6 +76,19 @@ export const addClientEquipement = async (req, res) => {
   }
 };
 
+// Get client contact statistics
+export const getClientContactStats = async (req, res) => {
+  try {
+    const totalContacts = await ContactClient.countDocuments();
+
+    res.json({
+      totalContacts,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 export const updateClient = async (req, res) => {
   try {
     const updatedClient = await Client.findByIdAndUpdate(

@@ -5,7 +5,7 @@ import {
     deleteTypeTask,
     exportTasks,
     getAllTasks, getAllTaskStatus, getAllTypeTasks,
-    getTaskById, getTaskStatus, getTaskStatusByName, getTypeTask,
+    getTaskById, getTaskStats, getTaskStatus, getTaskStatusByName, getTypeTask,
     updateTask, updateTaskStatus, updateTypeTask
 } from '../controllers/task.controller.js';
 
@@ -38,5 +38,7 @@ router.patch('/:id', updateTask);
 // router.delete('/:id', authorizeRole('admin'), deleteTask);
 router.delete('/:id', deleteTask);
 router.post('/export', exportTasks);
+
+router.get('/stats', getTaskStats);
 
 export default router;
