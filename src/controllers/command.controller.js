@@ -1,4 +1,5 @@
 import xlsx from "xlsx";
+import { generateRandomID } from "../config/utils.js";
 import { Article } from '../models/article.model.js';
 import { ContactClient } from '../models/client.model.js';
 import { Command, LineCommand, StatutArtCmd, StatutCmd } from '../models/command.model.js';
@@ -63,8 +64,10 @@ export const createCommand = async (req, res) => {
   const { date_cmd, id_client, id_collaborateur, statut_cmd, date_livraison, notes_cmd, articles } = req.body;
 
   try {
+    const id_order = generateRandomID("ORD")
     // Create a new Command
     const newCommand = new Command({
+      id_order,
       date_cmd,
       id_client,
       id_collaborateur,
@@ -144,7 +147,7 @@ export const exportCommands = async (req, res) => {
     // Set headers to indicate the file type and attachment
     res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    
+
     // Send the buffer directly
     res.send(buffer);
 
@@ -454,7 +457,7 @@ export const updateStatutArtCmd = async (req, res) => {
   try {
     const { description } = req.body;
     const updatedStatutArtCmd = await StatutArtCmd.findByIdAndUpdate(req.params.id, { description: description });
-        if (!updatedStatutArtCmd) {
+    if (!updatedStatutArtCmd) {
       return res.status(404).json({ message: 'StatutArtCmd not found' });
     }
     res.json(updatedStatutArtCmd);

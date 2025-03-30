@@ -29,6 +29,11 @@ const commandSchema = new mongoose.Schema({
     type: Date,
     required: true
   },
+  id_order: {
+    type: String,
+    unique: true,
+    required: true
+  },
   id_client: {
     // type: mongoose.Schema.Types.ObjectId,
     type: String,
