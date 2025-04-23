@@ -8,11 +8,11 @@ export const getAllProjects = async (req, res) => {
 
     let searchQuery = searchTerm
       ? {
-          $or: [
-            { name: { $regex: searchTerm, $options: 'i' } },
-            { description: { $regex: searchTerm, $options: 'i' } },
-          ],
-        }
+        $or: [
+          { name: { $regex: searchTerm, $options: 'i' } },
+          { description: { $regex: searchTerm, $options: 'i' } },
+        ],
+      }
       : {};
 
     const projects = await Project.find(searchQuery)
@@ -34,6 +34,37 @@ export const getAllProjects = async (req, res) => {
   }
 };
 
+export const getProjectsZonesDropdown = async (req, res) => {
+  const { page = 1, limit = 10, search } = req.query;
+  try {
+    const parsedLimit = parseInt(limit);
+    const parsedPage = parseInt(page);
+    const skip = (parsedPage - 1) * parsedLimit;
+
+    const query = {};
+    if (search) {
+      query.$or = [
+        { zone_cible: { $regex: search, $options: 'i' } },
+        { sous_Zone_cible: { $regex: search, $options: 'i' } }
+      ];
+    }
+
+    const results = await ZoneCible.find(query)
+      .skip(skip)
+      .limit(parsedLimit + 1)
+      .exec();
+
+    const hasMore = results.length > parsedLimit;
+    const data = hasMore ? results.slice(0, -1) : results;
+
+    res.json({
+      data,
+      nextPage: hasMore ? parsedPage + 1 : null,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 export const getProjectById = async (req, res) => {
   try {
     const project = await Project.findById(
@@ -183,7 +214,7 @@ export const exportProjects = async (req, res) => {
     // Set headers to indicate the file type and attachment
     res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    
+
     // Send the buffer directly
     res.send(buffer);
 

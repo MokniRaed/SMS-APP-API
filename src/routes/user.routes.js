@@ -1,6 +1,7 @@
 import express from 'express';
 import {
     createFromClient,
+    createFromCollab,
     createRole,
     createUser,
     deleteRole,
@@ -42,4 +43,5 @@ router.get('/:id', getUserById); // Get a specific user by ID
 router.patch('/:id', updateUser); // Update a user by ID
 router.delete('/:id', deleteUser); // Delete a user by ID
 router.post('/createFromClient/:clientId', createFromClient);
+router.post('/createFromCollab/:collabId', createFromCollab);
 export default router;

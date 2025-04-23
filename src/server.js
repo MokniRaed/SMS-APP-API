@@ -8,6 +8,7 @@ import articleRoutes from "./routes/article.routes.js";
 import authRoutes from "./routes/auth.routes.js";
 import categoryRoutes from "./routes/category.routes.js";
 import clientRoutes from "./routes/client.routes.js";
+import collaboratorRoutes from "./routes/collaborator.routes.js";
 import orderRoutes from "./routes/order.routes.js";
 import projectRoutes from "./routes/project.routes.js";
 import requestRoutes from "./routes/request.routes.js";
@@ -64,7 +65,8 @@ app.use("/api/categories", categoryRoutes);
 app.use("/api/articles", articleRoutes);
 app.use("/api/orders", orderRoutes);
 
-app.use("/api/requests", authenticateToken, requestRoutes);
+app.use("/api/requests", requestRoutes);
+app.use("/api/collaborators", collaboratorRoutes);
 app.use("/api/clients", clientRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/upload", authenticateToken, uploadRoutes);

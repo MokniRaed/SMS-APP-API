@@ -1,6 +1,6 @@
 import express from 'express';
 import { upload } from '../config/multer.js';
-import { createProduitCible, createProject, createProjectStatus, createTypeProject, deleteProduitCible, deleteProject, deleteProjectStatus, deleteTypeProject, exportProjects, getAllProduitsCible, getAllProjects, getAllProjectsStatus, getAllTypeProjects, getAllZones, getProduitCibleById, getProjectById, getProjectStats, getProjectStatus, getTypeProjectById, updateProduitCible, updateProject, updateProjectStatus, updateTypeProject, uploadZones } from '../controllers/project.controller.js';
+import { createProduitCible, createProject, createProjectStatus, createTypeProject, deleteProduitCible, deleteProject, deleteProjectStatus, deleteTypeProject, exportProjects, getAllProduitsCible, getAllProjects, getAllProjectsStatus, getAllTypeProjects, getAllZones, getProduitCibleById, getProjectById, getProjectStats, getProjectStatus, getProjectsZonesDropdown, getTypeProjectById, updateProduitCible, updateProject, updateProjectStatus, updateTypeProject, uploadZones } from '../controllers/project.controller.js';
 
 const router = express.Router();
 
@@ -27,6 +27,7 @@ router.delete('/productcible/:id', deleteProduitCible);
 
 
 router.get('/zones', getAllZones);
+router.get('/zones/dropdown', getProjectsZonesDropdown);
 
 
 router.get('/', getAllProjects);

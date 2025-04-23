@@ -351,7 +351,7 @@ export const exportContactClients = async (req, res) => {
     // Set headers to indicate the file type and attachment
     res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    
+
     // Send the buffer directly
     res.send(buffer);
 

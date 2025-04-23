@@ -1,33 +1,37 @@
 import mongoose from 'mongoose';
 
 const requestSchema = new mongoose.Schema({
-  Id_requete: {
+  id_requete: {
     type: String,
     required: true,
     unique: true
   },
-  Date_requete: {
+  date_requete: {
     type: Date,
     required: true
   },
-  Id_Client: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Client',
-    required: true
+  id_client: {
+    type: String,
+    required: true,
   },
-  Type_requete: {
+  type_requete: {
     type: String,
     required: true
   },
-  Cible_requete: String,
-  Description_requete: String,
-  Date_traitement_requete: Date,
-  Heure_traitement_requete: String,
-  Statut_requete: {
+  cible_requete: String,
+  description_requete: String,
+  date_traitement_requete: Date,
+  heure_traitement_requete: String,
+  statut_requete: {
     type: String,
     required: true
   },
-  Notes_requete: String
+  archived: {
+    type: Boolean,
+    required: true,
+    default: false,
+  },
+  notes_requete: String
 }, {
   timestamps: true
 });
