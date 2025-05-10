@@ -72,11 +72,11 @@ const projectSchema = new mongoose.Schema({
   description_projet: String,
   objectif_ca: Number,
   objectif_qte: Number,
-  zone_cible: {
+  zone_cible: [{
     type: mongoose.Schema.Types.ObjectId,
-    required: true,
     ref: 'ZoneCible',
-  },
+    required: true
+  }],
   periode_date_debut: Date,
   periode_date_fin: Date,
   statut_projet: {

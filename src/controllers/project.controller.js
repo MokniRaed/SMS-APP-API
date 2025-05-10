@@ -34,6 +34,44 @@ export const getAllProjects = async (req, res) => {
   }
 };
 
+// Get all projects with pagination, search, and dropdown style
+export const getAllProjectsDropDown = async (req, res) => {
+  const { page = 1, limit = 10, searchTerm = '' } = req.query;
+
+  try {
+    const parsedLimit = parseInt(limit);
+    const parsedPage = parseInt(page);
+    const skip = (parsedPage - 1) * parsedLimit;
+
+    let searchQuery = {};
+    if (searchTerm) {
+      searchQuery = {
+        $or: [
+          { nom_projet: { $regex: searchTerm, $options: 'i' } }, // Correct field names for your Project model
+          { description_projet: { $regex: searchTerm, $options: 'i' } },
+        ],
+      };
+    }
+
+    const results = await Project.find(searchQuery)
+      .populate('type_projet produit_cible statut_projet zone_cible')
+      .skip(skip)
+      .limit(parsedLimit + 1)
+      .exec();
+
+    const hasMore = results.length > parsedLimit;
+    const data = hasMore ? results.slice(0, -1) : results;
+
+    res.json({
+      data,
+      nextPage: hasMore ? parsedPage + 1 : null,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
 export const getProjectsZonesDropdown = async (req, res) => {
   const { page = 1, limit = 10, search } = req.query;
   try {
@@ -65,6 +103,7 @@ export const getProjectsZonesDropdown = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
 export const getProjectById = async (req, res) => {
   try {
     const project = await Project.findById(

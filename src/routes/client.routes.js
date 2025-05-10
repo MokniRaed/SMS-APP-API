@@ -14,6 +14,7 @@ import {
   getAllInformationLibres,
   getAllTypeInfoLibres,
   getClientContacts,
+  getClientContactsDropdown,
   getClientContactStats,
   getContactById,
   getFonctionContactById,
@@ -32,6 +33,7 @@ const router = express.Router();
 
 router.post('/contacts', addClientContact); // Create a contact for a client
 router.get('/contacts', getClientContacts); // Get all contacts for a client
+router.get('/contacts/dropdown', getClientContactsDropdown); // Get all contacts for a client
 router.get('/contacts/:contactId', getContactById); // Get a specific contact by ID
 router.patch('/contacts/:contactId', updateContact); // Update a contact by ID
 router.delete('/contacts/:contactId', deleteContact); // Delete a contact by ID

@@ -1,10 +1,12 @@
 import express from 'express';
 import {
-    createTask, createTaskStatus, createTypeTask,
+    createTask,
+    createTypeTask,
     deleteTask,
     deleteTypeTask,
     exportTasks,
     getAllTasks, getAllTaskStatus, getAllTypeTasks,
+    getAllTypeTasksDropdown,
     getTaskById, getTaskStats, getTaskStatus, getTaskStatusByName, getTypeTask,
     updateTask, updateTaskStatus, updateTypeTask
 } from '../controllers/task.controller.js';
@@ -14,6 +16,7 @@ const router = express.Router();
 
 
 router.get('/taskType', getAllTypeTasks);
+router.get('/taskType/dropdown', getAllTypeTasksDropdown);
 router.get('/taskType/:id', getTypeTask);
 router.post('/taskType', createTypeTask);
 router.patch('/taskType/:id', updateTypeTask);

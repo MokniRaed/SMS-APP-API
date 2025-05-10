@@ -177,6 +177,43 @@ export const getContactById = async (req, res) => {
   }
 };
 
+
+// Get client contacts with pagination, search, and dropdown style
+export const getClientContactsDropdown = async (req, res) => {
+  const { page = 1, limit = 10, search } = req.query;
+
+  try {
+    const parsedLimit = parseInt(limit);
+    const parsedPage = parseInt(page);
+    const skip = (parsedPage - 1) * parsedLimit;
+
+    const query = {};
+    if (search) {
+      query.$or = [
+        { nom_contact: { $regex: search, $options: 'i' } }, // Assuming contact has 'nom_contact' field
+        { email_contact: { $regex: search, $options: 'i' } }, // Assuming contact has 'email_contact' field
+      ];
+    }
+
+    const results = await ContactClient.find(query)
+      .populate("fonction_contact")
+      .skip(skip)
+      .limit(parsedLimit + 1)
+      .exec();
+
+    const hasMore = results.length > parsedLimit;
+    const data = hasMore ? results.slice(0, -1) : results;
+
+    res.json({
+      data,
+      nextPage: hasMore ? parsedPage + 1 : null,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
 // Update a contact by ID
 export const updateContact = async (req, res) => {
   try {

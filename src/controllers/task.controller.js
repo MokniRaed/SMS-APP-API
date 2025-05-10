@@ -1,13 +1,11 @@
-import { StatutTache, Task, TypeTache } from '../models/task.model.js';
 import xlsx from 'xlsx';
-import path from 'path';
-import fs from 'fs';
+import { StatutTache, Task, TypeTache } from '../models/task.model.js';
 
 // ******** Controller Code for Tasks  ********* //
 // ****************************************************
 export const getAllTasks = async (req, res) => {
     try {
-        const { page = 1, limit = 10, searchTerm = '', id_collaborateur ,start, end} = req.query;
+        const { page = 1, limit = 10, searchTerm = '', id_collaborateur, start, end } = req.query;
         const skip = (page - 1) * limit;
 
         const searchQuery = searchTerm
@@ -122,88 +120,88 @@ export const deleteTask = async (req, res) => {
 
 export const exportTasks = async (req, res) => {
     try {
-    //   const { type } = req.query;
-  
-    //   if (!type) return res.status(400).json({ message: "Type parameter is required" });
-  
-    //   const allowedTypes = ["type_tache", "statut_tache"]; // Adjust based on the types you want to allow
-    //   if (!allowedTypes.includes(type)) {
-    //     return res.status(400).json({ message: "Invalid task type" });
-    //   }
-  
-      console.log("Fetching tasks...");
-      
-      // Ensure you're not accidentally filtering by _id
-      const tasks = await Task.find({})
-        .populate('type_tache', 'nom_type_tch') // Populate type_tache (adjust if the type is wrong here)
-        .populate('statut_tache', 'nom_statut_tch') // Populate statut_tache (same here)
-        .populate('id_client', 'nom_prenom_contact') // Populate statut_tache (same here)
-        .populate('id_collaborateur', 'username') // Populate statut_tache (same here)
-        .populate('id_projet', 'nom_projet') // Populate statut_tache (same here)
-        .select('title_tache type_tache id_client id_projet id_collaborateur date_tache description_tache adresse_tache date_execution_tache compte_rendu_tache statut_tache notes_tache -_id');
-        console.log("tasks",tasks);
-        
-      if (tasks.length === 0) {
-        return res.status(404).json({ message: "No tasks found for this type" });
-      }
-  
-      // Convert tasks to an array of objects for Excel export
-      const data = tasks.map(task => ({
-        title: task.title_tache,
-        type: task.type_tache ? task.type_tache.nom_type_tch : 'N/A', // Accessing the name of type_tache
-        statut: task.statut_tache ? task.statut_tache.nom_statut_tch : 'N/A', // Accessing the name of statut_tache
-        client: task.id_client? task.id_client.nom_prenom_contact : 'N/A',
-        project: task.id_projet? task.id_projet.nom_projet : 'N/A',
-        collaborator: task.id_collaborateur? task.id_collaborateur.username : 'N/A',
-        taskDate: task.date_tache,
-        description: task.description_tache,
-        address: task.adresse_tache,
-        executionDate: task.date_execution_tache,
-        report: task.compte_rendu_tache,
-        notes: task.notes_tache
-      }));
-      console.log("Creating Excel file...");
-      const worksheet = xlsx.utils.json_to_sheet(data);
-      const workbook = xlsx.utils.book_new();
-      xlsx.utils.book_append_sheet(workbook, worksheet, "Tasks");
-  
-      // Generate a safe filename based on the current date
-    const formattedDate = new Date().toISOString().replace(/[-:.]/g, "_"); // Safe filename format (YYYY_MM_DD_HH_mm_SS)
-    const filename = `tasks_${formattedDate}.xlsx`;
+        //   const { type } = req.query;
 
-    // Write the file to a buffer (in memory)
-    const buffer = xlsx.write(workbook, { bookType: 'xlsx', type: 'buffer' });
+        //   if (!type) return res.status(400).json({ message: "Type parameter is required" });
 
-    // Set headers to indicate the file type and attachment
-    res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
-    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    
-    // Send the buffer directly
-    res.send(buffer);
+        //   const allowedTypes = ["type_tache", "statut_tache"]; // Adjust based on the types you want to allow
+        //   if (!allowedTypes.includes(type)) {
+        //     return res.status(400).json({ message: "Invalid task type" });
+        //   }
 
-    console.log("File sent successfully!");
+        console.log("Fetching tasks...");
+
+        // Ensure you're not accidentally filtering by _id
+        const tasks = await Task.find({})
+            .populate('type_tache', 'nom_type_tch') // Populate type_tache (adjust if the type is wrong here)
+            .populate('statut_tache', 'nom_statut_tch') // Populate statut_tache (same here)
+            .populate('id_client', 'nom_prenom_contact') // Populate statut_tache (same here)
+            .populate('id_collaborateur', 'username') // Populate statut_tache (same here)
+            .populate('id_projet', 'nom_projet') // Populate statut_tache (same here)
+            .select('title_tache type_tache id_client id_projet id_collaborateur date_tache description_tache adresse_tache date_execution_tache compte_rendu_tache statut_tache notes_tache -_id');
+        console.log("tasks", tasks);
+
+        if (tasks.length === 0) {
+            return res.status(404).json({ message: "No tasks found for this type" });
+        }
+
+        // Convert tasks to an array of objects for Excel export
+        const data = tasks.map(task => ({
+            title: task.title_tache,
+            type: task.type_tache ? task.type_tache.nom_type_tch : 'N/A', // Accessing the name of type_tache
+            statut: task.statut_tache ? task.statut_tache.nom_statut_tch : 'N/A', // Accessing the name of statut_tache
+            client: task.id_client ? task.id_client.nom_prenom_contact : 'N/A',
+            project: task.id_projet ? task.id_projet.nom_projet : 'N/A',
+            collaborator: task.id_collaborateur ? task.id_collaborateur.username : 'N/A',
+            taskDate: task.date_tache,
+            description: task.description_tache,
+            address: task.adresse_tache,
+            executionDate: task.date_execution_tache,
+            report: task.compte_rendu_tache,
+            notes: task.notes_tache
+        }));
+        console.log("Creating Excel file...");
+        const worksheet = xlsx.utils.json_to_sheet(data);
+        const workbook = xlsx.utils.book_new();
+        xlsx.utils.book_append_sheet(workbook, worksheet, "Tasks");
+
+        // Generate a safe filename based on the current date
+        const formattedDate = new Date().toISOString().replace(/[-:.]/g, "_"); // Safe filename format (YYYY_MM_DD_HH_mm_SS)
+        const filename = `tasks_${formattedDate}.xlsx`;
+
+        // Write the file to a buffer (in memory)
+        const buffer = xlsx.write(workbook, { bookType: 'xlsx', type: 'buffer' });
+
+        // Set headers to indicate the file type and attachment
+        res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+
+        // Send the buffer directly
+        res.send(buffer);
+
+        console.log("File sent successfully!");
 
     } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Error exporting tasks', error: error.message });
+        console.error(error);
+        res.status(500).json({ message: 'Error exporting tasks', error: error.message });
     }
-  };
+};
 // ****************************************************
 // ****************************************************
 
 // Get task statistics
 export const getTaskStats = async (req, res) => {
-  try {
-    const totalTasks = await Task.countDocuments();
-    const completedTasks = await Task.countDocuments({ 'statut_tache.nom_statut_tch': 'CLOSED' });
+    try {
+        const totalTasks = await Task.countDocuments();
+        const completedTasks = await Task.countDocuments({ 'statut_tache.nom_statut_tch': 'CLOSED' });
 
-    res.json({
-      totalTasks,
-      completedTasks,
-    });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
+        res.json({
+            totalTasks,
+            completedTasks,
+        });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
 };
 
 
@@ -219,6 +217,40 @@ export const getAllTypeTasks = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
+
+export const getAllTypeTasksDropdown = async (req, res) => {
+    const { page = 1, limit = 10, search } = req.query;
+    try {
+        const parsedLimit = parseInt(limit);
+        const parsedPage = parseInt(page);
+        const skip = (parsedPage - 1) * parsedLimit;
+
+        const query = {};
+        if (search) {
+            query.$or = [
+                { nom_type_tache: { $regex: search, $options: 'i' } }, // <-- example field
+                { description_type_tache: { $regex: search, $options: 'i' } } // <-- example field
+            ];
+        }
+
+        const results = await TypeTache.find(query)
+            .skip(skip)
+            .limit(parsedLimit + 1)
+            .exec();
+
+        const hasMore = results.length > parsedLimit;
+        const data = hasMore ? results.slice(0, -1) : results;
+
+        res.json({
+            data,
+            nextPage: hasMore ? parsedPage + 1 : null,
+        });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 
 
 
@@ -296,17 +328,17 @@ export const getAllTaskStatus = async (req, res) => {
 
 export const getTaskStatusByName = async (req, res) => {
 
-    console.log("req.query.name",req.query.name);
-    
+    console.log("req.query.name", req.query.name);
+
     try {
-   const statusTask= await StatutTache.findOne({ nom_statut_tch: req.query.name })
-           console.log("statusTask",statusTask);
-           
+        const statusTask = await StatutTache.findOne({ nom_statut_tch: req.query.name })
+        console.log("statusTask", statusTask);
+
         res.json({ data: statusTask })
-    
-} catch (error) {
-    res.status(500).json({ message: error.message });
-}
+
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
 };
 
 
